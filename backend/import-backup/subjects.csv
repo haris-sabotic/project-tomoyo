@@ -1,0 +1,17 @@
+﻿id,name,kind
+0,CSBH,regular
+1,Matematika,regular
+2,Engleski jezik,regular
+3,Fizicko vaspitanje,sala
+4,Informatika,computer
+5,Fizika,regular
+6,Hemija,regular
+7,Uvod u programiranje - teorijska nastava,regular
+8,Uvod u programiranje - prakticna nastava,computer
+9,Osnove grafickog dizajna - teorijska nastava,regular
+10,Osnove grafickog dizajna - prakticna nastava,computer
+11,Operativni sistemi - teorijska nastava,regular
+12,Operativni sistemi - prakticna nastava,computer
+13,Osnove racunarstva - teorijska nastava,regular
+14,Osnove racunarstva - prakticna nastava,computer
+15,TEST,regular
