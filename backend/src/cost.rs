@@ -99,7 +99,7 @@ pub fn hard_too_many_subjects_of_same_kind(
 /*   SOFT CONSTRAINTS   */
 /* ==================== */
 
-/// Increment points by 5 for each day in c class timetable that contains more periods than what's ideal (even spread)
+/// Increment points by 5 for each day in a class timetable that contains more periods than what's ideal (even spread)
 pub fn soft_class_spread(timetable: &Timetable) -> i32 {
     let mut points = 0;
 
@@ -139,43 +139,9 @@ pub fn soft_class_spread(timetable: &Timetable) -> i32 {
     points
 }
 
-/// Increment points by 5 for each teacher that only comes to school to teach a single period during a day
+/// Increment points by 5 for each teacher that doesn't have a day off
 pub fn soft_teacher_free_days(timetable: &Timetable) -> i32 {
     let mut points = 0;
-
-    for day in 0..5 {
-        // for each teacher, the number of periods they're teaching during this day
-        let mut teacher_counts: HashMap<usize, u32> = HashMap::new();
-
-        for period in 0..timetable.max_periods_per_day {
-            let index = day * timetable.max_periods_per_day + period;
-
-            for class_slots in timetable.table.iter() {
-                match class_slots.slots[index as usize] {
-                    Slot::PartiallyFilled { teacher, .. } => {
-                        teacher_counts
-                            .entry(teacher)
-                            .and_modify(|v| *v += 1)
-                            .or_insert(1);
-                    }
-                    Slot::Filled { teacher, .. } => {
-                        teacher_counts
-                            .entry(teacher)
-                            .and_modify(|v| *v += 1)
-                            .or_insert(1);
-                    }
-
-                    _ => {}
-                }
-            }
-        }
-
-        for c in teacher_counts.values() {
-            if *c == 1 {
-                points += 5;
-            }
-        }
-    }
 
     points
 }

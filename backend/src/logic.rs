@@ -126,7 +126,7 @@ impl Timetable {
     pub fn start_algorithm(&mut self, running: Arc<AtomicBool>) {
         let room_kinds_count = util::room_kinds_count(&self.data.rooms);
 
-        // OLD ALGORITHM:
+        // SIMULATED ANNEALLING:
         {
             const ALPHA: f32 = 0.97;
             const T0: f32 = 1.0;
@@ -153,8 +153,11 @@ impl Timetable {
 
                     let delta_hard = new_s_cost_hard - s_cost_hard;
 
-                    if delta_hard < 0 {
-                        print!("NEW SOLUTION ACCEPTED (hard cost: {})", new_s_cost_hard);
+                    if delta_hard <= 0 {
+                        print!(
+                            "[TEMP: {}] NEW SOLUTION ACCEPTED (hard cost: {})",
+                            t, new_s_cost_hard
+                        );
                         s = new_s;
 
                         let best_s_cost_hard = best_s.hard_points(&room_kinds_count);
@@ -163,94 +166,23 @@ impl Timetable {
                             best_s = s.clone();
                         }
 
-                        println!(
-                            ",  DELTA: {} ({} - {})",
-                            delta_hard, new_s_cost_hard, s_cost_hard
-                        );
+                        println!(",  DELTA: {}", delta_hard);
                     } else {
                         let x: f64 = thread_rng().gen_range(0.0..1.0);
 
                         let base: f64 = std::f64::consts::E;
+
                         let exponent = (-delta_hard as f64) / (t as f64);
+
                         let chance = base.powf(exponent);
                         if x < chance {
                             print!(
-                                "NEW SOLUTION ACCEPTED (hard cost: {}) BY CHANCE ({})",
-                                new_s_cost_hard, chance
+                                "[TEMP: {}] NEW SOLUTION ACCEPTED (hard cost: {}) BY CHANCE ({})",
+                                t, new_s_cost_hard, chance
                             );
                             s = new_s;
 
-                            println!(
-                                ",  DELTA: {} ({} - {})",
-                                delta_hard, new_s_cost_hard, s_cost_hard
-                            );
-                        }
-                    }
-                }
-
-                if exit {
-                    break;
-                }
-
-                t = t * ALPHA;
-            }
-
-            self.table = best_s.table;
-
-            let mut s = self.clone();
-            let mut best_s = self.clone();
-            let mut t = T0;
-
-            while running.load(Ordering::Relaxed) {
-                let mut exit = false;
-
-                for _ in 0..SA_MAX {
-                    let new_s = s.generate_neighbor();
-
-                    let new_s_cost_hard = new_s.hard_points(&room_kinds_count);
-                    let new_s_cost_soft = new_s.soft_points();
-                    let s_cost_soft = s.soft_points();
-
-                    if s_cost_soft == 0 {
-                        exit = true;
-                        break;
-                    }
-
-                    let delta_soft = new_s_cost_soft - s_cost_soft;
-
-                    if new_s_cost_hard == 0 {
-                        if delta_soft < 0 {
-                            print!("NEW SOLUTION ACCEPTED (soft cost: {})", new_s_cost_soft);
-                            s = new_s;
-
-                            let best_s_cost_soft = best_s.soft_points();
-                            if new_s_cost_soft < best_s_cost_soft {
-                                print!(" AS BEST");
-                                best_s = s.clone();
-                            }
-
-                            println!(
-                                ",  DELTA: {} ({} - {})",
-                                delta_soft, new_s_cost_soft, s_cost_soft
-                            );
-                        } else {
-                            let x: f64 = thread_rng().gen_range(0.0..1.0);
-
-                            let base: f64 = std::f64::consts::E;
-                            let exponent = (-delta_soft as f64) / (t as f64);
-                            let chance = base.powf(exponent);
-                            if x < chance {
-                                print!(
-                                    "NEW SOLUTION ACCEPTED (soft cost: {}) BY CHANCE ({})",
-                                    new_s_cost_soft, chance
-                                );
-                                s = new_s;
-
-                                println!(
-                                    ",  DELTA: {} ({} - {})",
-                                    delta_soft, new_s_cost_soft, s_cost_soft
-                                );
-                            }
+                            println!(",  DELTA: {}", delta_hard);
                         }
                     }
                 }
@@ -265,7 +197,7 @@ impl Timetable {
             self.table = best_s.table;
         }
 
-        // NEW ALGORITHM:
+        // LATE ACCEPTANCE HILL-CLIMBING:
         {
             /*
             const L: i32 = 100;
