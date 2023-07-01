@@ -51,7 +51,8 @@
                 return subject.name == relation.subject;
             }),
             class_: classes.findIndex((class_) => class_ == relation.class_),
-            perWeek: relation.perWeek,
+            perWeekFirst: relation.perWeekFirst,
+            perWeekSecond: relation.perWeekSecond,
         };
     }
 
@@ -60,7 +61,8 @@
             teacher: teachers[relation.teacher],
             subject: subjects[relation.subject].name,
             class_: classes[relation.class_],
-            perWeek: relation.perWeek,
+            perWeekFirst: relation.perWeekFirst,
+            perWeekSecond: relation.perWeekSecond,
         };
     }
 
@@ -100,12 +102,20 @@
         if (teacher.length > 0 && subject.length > 0 && classes.length > 0) {
             let data = [];
             classes.split(",").forEach((c) => {
+                let perWeekFirst = perWeek;
+                let perWeekSecond = null;
+                if (perWeek.split("/").length == 2) {
+                    perWeekFirst = perWeek.split("/")[0];
+                    perWeekSecond = perWeek.split("/")[1];
+                }
+                
                 data = [
                     {
                         teacher: teacher,
                         subject: subject,
                         class_: c,
-                        perWeek: perWeek,
+                        perWeekFirst: parseInt(perWeekFirst),
+                        perWeekSecond: parseInt(perWeekSecond),
                     },
                 ].concat(data);
             });
@@ -139,7 +149,7 @@
     <input bind:value={relationClasses} type="text" placeholder="Classes" />
     <input
         bind:value={relationPerWeek}
-        type="number"
+        type="text"
         placeholder="Per week"
         id="per-week"
     />
@@ -148,18 +158,20 @@
 
 <div class="list-wrapper">
     <div class="list">
-        {#each relations as { teacher, subject, class_, perWeek }, key}
+        {#each relations as { teacher, subject, class_, perWeekFirst, perWeekSecond }, key}
             <p>{teacher}</p>
             <p>{subject}</p>
             <p>{class_}</p>
-            <p>{perWeek}</p>
+            <p>{(perWeekSecond == null) ? perWeekFirst : (perWeekFirst + " / " + perWeekSecond)}</p>
             <button
                 on:click={() => {
                     socket.send(
                         JSON.stringify({
                             kind: "list",
                             tab: "relations",
-                            data: relations.filter((_, i) => i != key).map(convertRelationToIndices),
+                            data: relations
+                                .filter((_, i) => i != key)
+                                .map(convertRelationToIndices),
                         })
                     );
                 }}>DELETE</button

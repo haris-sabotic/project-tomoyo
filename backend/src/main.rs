@@ -59,10 +59,83 @@ impl Handler for Server {
 
             Some("export") => handle_export(&mut timetable, &parsed_msg),
 
-            Some("list") => self.out.send(msg).unwrap(),
+            Some("list") => {
+                self.out.send(msg).unwrap();
+
+                let tab = parsed_msg["tab"].as_str().unwrap();
+
+                match tab {
+                    "classes" => {
+                        let data = parsed_msg["data"].as_array().unwrap();
+
+                        timetable.data.classes.clear();
+                        for v in data.iter() {
+                            timetable.data.classes.push(Class {
+                                name: String::from(v.as_str().unwrap()),
+                            })
+                        }
+                    }
+                    "rooms" => {
+                        let data = parsed_msg["data"].as_array().unwrap();
+
+                        timetable.data.rooms.clear();
+                        for v in data.iter() {
+                            timetable.data.rooms.push(Room {
+                                name: String::from(v["name"].as_str().unwrap()),
+                                kind: String::from(v["kind"].as_str().unwrap()),
+                            })
+                        }
+                    }
+                    "subjects" => {
+                        let data = parsed_msg["data"].as_array().unwrap();
+
+                        timetable.data.subjects.clear();
+                        for v in data.iter() {
+                            timetable.data.subjects.push(Subject {
+                                name: String::from(v["name"].as_str().unwrap()),
+                                kind: String::from(v["kind"].as_str().unwrap()),
+                            })
+                        }
+                    }
+                    "teachers" => {
+                        let data = parsed_msg["data"].as_array().unwrap();
+
+                        timetable.data.teachers.clear();
+                        for v in data.iter() {
+                            timetable.data.teachers.push(Teacher {
+                                name: String::from(v.as_str().unwrap()),
+                            })
+                        }
+                    }
+                    "relations" => {
+                        let data = parsed_msg["data"].as_array().unwrap();
+
+                        timetable.data.relations.clear();
+                        for v in data.iter() {
+                            // annoying process to convert it to an Option<u32>
+                            let mut second: Option<u32> = None;
+                            match v["perWeekSecond"].as_u64() {
+                                Some(n) => {
+                                    second = Some(n as u32);
+                                }
+                                None => {}
+                            }
+
+                            timetable.data.relations.push(Relation {
+                                teacher: v["teacher"].as_u64().unwrap() as usize,
+                                subject: v["subject"].as_u64().unwrap() as usize,
+                                class: v["class_"].as_u64().unwrap() as usize,
+                                per_week_first: v["perWeekFirst"].as_u64().unwrap() as u32,
+                                per_week_second: second,
+                            })
+                        }
+                    }
+                    _ => {}
+                }
+            }
 
             Some("initial_timetable") => {
-                timetable.generate_random_table();
+                timetable.generate_random_table(&self.out);
                 send_timetable(&timetable, &self.out);
             }
 

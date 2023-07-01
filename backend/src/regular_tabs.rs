@@ -1,5 +1,5 @@
-use serde_json::{json, Value};
 use project_tomoyo::*;
+use serde_json::{json, Value};
 use ws::Sender;
 
 use crate::util::*;
@@ -73,7 +73,7 @@ pub fn send_relations(sender: &Sender, relations: &Vec<Relation>) {
     data.reserve(relations.len());
 
     for relation in relations.iter() {
-        data.push(json!({"teacher": relation.teacher, "subject": relation.subject, "class_": relation.class, "perWeek": relation.per_week}));
+        data.push(json!({"teacher": relation.teacher, "subject": relation.subject, "class_": relation.class, "perWeekFirst": relation.per_week_first, "perWeekSecond": relation.per_week_second}));
     }
 
     let json = json!({
@@ -154,11 +154,21 @@ pub fn update_relations(relations: &mut Vec<Relation>, data: &Value) {
             relations.reserve(arr.len());
 
             for el in arr {
+                // annoying process to convert it to an Option<u32>
+                let mut second: Option<u32> = None;
+                match el["perWeekSecond"].as_u64() {
+                    Some(n) => {
+                        second = Some(n as u32);
+                    }
+                    None => {}
+                }
+
                 relations.push(Relation {
                     teacher: el["teacher"].as_i64().unwrap() as usize,
                     subject: el["subject"].as_i64().unwrap() as usize,
                     class: el["class_"].as_i64().unwrap() as usize,
-                    per_week: el["perWeek"].as_i64().unwrap() as u32,
+                    per_week_first: el["perWeekFirst"].as_i64().unwrap() as u32,
+                    per_week_second: second,
                 })
             }
         }

@@ -48,6 +48,7 @@
                     {subjects}
                     {teachers}
                     {rooms}
+                    max_periods_per_day={timetable.max_periods_per_day}
                 />
             {/each}
         </tr>

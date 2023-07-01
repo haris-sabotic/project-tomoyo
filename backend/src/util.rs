@@ -7,9 +7,9 @@ use ws::Sender;
 pub fn ws_send(sender: &Sender, json: &Value) {
     sender.send(json.to_string()).unwrap();
 
-//    println!("===== MESSAGE SENT BY SERVER START =====");
-//    println!("{}", serde_json::to_string_pretty(json).unwrap());
-//    println!("=====  MESSAGE SENT BY SERVER END  =====");
+    // println!("===== MESSAGE SENT BY SERVER START =====");
+    // println!("{}", serde_json::to_string_pretty(json).unwrap());
+    // println!("=====  MESSAGE SENT BY SERVER END  =====");
 }
 
 pub fn room_kinds_count(rooms: &Vec<Room>) -> HashMap<String, u32> {

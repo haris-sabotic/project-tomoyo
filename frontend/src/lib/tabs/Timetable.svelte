@@ -45,13 +45,15 @@
         }
     });
 
-    socket.send(
-        JSON.stringify({
-            kind: "initial_timetable",
-            tab: "timetable",
-            data: null,
-        })
-    );
+    function handleInitialTimetable() {
+        socket.send(
+            JSON.stringify({
+                kind: "initial_timetable",
+                tab: "timetable",
+                data: null,
+            })
+        );
+    }
 
     function handlePlay() {
         socket.send(
@@ -114,6 +116,7 @@
         </option>
     {/each}
 </select>
+<button on:click={handleInitialTimetable}>Initial timetable</button>
 {#if timetable.table}
     <div class="buttons">
         <div class="play-pause">

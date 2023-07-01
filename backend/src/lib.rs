@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Class {
     pub name: String,
@@ -28,5 +27,6 @@ pub struct Relation {
     pub teacher: usize,
     pub subject: usize,
     pub class: usize,
-    pub per_week: u32,
+    pub per_week_first: u32,
+    pub per_week_second: Option<u32>,
 }
