@@ -146,16 +146,22 @@ impl Handler for Server {
             Some("play") => {
                 self.time = Instant::now();
 
+                let data = parsed_msg["data"].as_array().unwrap();
+                for i in 0..timetable.table.len() {
+                    timetable.table[i] = serde_json::from_value(data[i].clone()).unwrap();
+                }
+
                 self.running_algorithm
                     .store(true, std::sync::atomic::Ordering::Relaxed);
                 let timetable_local_ref = self.timetable.clone(); // cloned reference to timetable
                 let running_algorithm_local_ref = self.running_algorithm.clone(); // cloned reference to timetable
+                let out_local_ref = self.out.clone(); // cloned reference to out channel
 
                 thread::spawn(move || {
                     timetable_local_ref
                         .lock()
                         .unwrap()
-                        .start_algorithm(running_algorithm_local_ref);
+                        .start_algorithm(running_algorithm_local_ref, &out_local_ref);
                 });
             }
 
