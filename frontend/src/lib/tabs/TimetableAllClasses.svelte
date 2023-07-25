@@ -1,11 +1,42 @@
 <script>
-    import TimetableSlot from "./TimetableSlot.svelte";
+    import TimetableClassSlot from "./TimetableClassSlot.svelte";
 
     export let timetable;
     export let classes;
     export let subjects;
     export let teachers;
     export let rooms;
+
+    let selectedClass = null;
+    let selectedSlot = null;
+
+    let onClassSlotClick = (class_index, slot_index) => {
+        if (selectedClass == null) {
+            selectedClass = class_index;
+            selectedSlot = slot_index;
+        } else {
+            // only swap if it's 2 slots within the same class
+            if (selectedClass == class_index) {
+                let tmp = timetable.table[selectedClass].slots[selectedSlot];
+                timetable.table[selectedClass].slots[selectedSlot] =
+                    timetable.table[class_index].slots[slot_index];
+                timetable.table[class_index].slots[slot_index] = tmp;
+            }
+
+            selectedClass = null;
+            selectedSlot = null;
+        }
+
+        console.log(
+            "Class index: " + class_index + ", Slot index: " + slot_index
+        );
+        console.log(
+            "Selected class index: " +
+                selectedClass +
+                ", Selected slot index: " +
+                selectedSlot
+        );
+    };
 </script>
 
 <table>
@@ -41,7 +72,7 @@
         <tr>
             <td><strong>{classes[class_index]}</strong></td>
             {#each slots as slot, slot_index}
-                <TimetableSlot
+                <TimetableClassSlot
                     day_separators={true}
                     {slot_index}
                     {slot}
@@ -49,6 +80,9 @@
                     {teachers}
                     {rooms}
                     max_periods_per_day={timetable.max_periods_per_day}
+                    selected={class_index == selectedClass &&
+                        slot_index == selectedSlot}
+                    onClick={() => onClassSlotClick(class_index, slot_index)}
                 />
             {/each}
         </tr>

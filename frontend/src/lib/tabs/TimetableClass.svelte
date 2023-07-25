@@ -1,5 +1,7 @@
 <script>
-    import TimetableSlot from "./TimetableSlot.svelte";
+// @ts-nocheck
+
+    import TimetableClassSlot from "./TimetableClassSlot.svelte";
 
     export let class_index;
     export let timetable;
@@ -23,13 +25,14 @@
             <td class="day-cell">{dayName}</td>
 
             {#each { length: timetable.max_periods_per_day } as _, period}
-                <TimetableSlot
+                <TimetableClassSlot
                     day_separators={false}
                     slot_index={day * timetable.max_periods_per_day + period}
                     slot={timetable.table[class_index].slots[day * timetable.max_periods_per_day + period]}
                     {subjects}
                     {teachers}
                     {rooms}
+                    max_periods_per_day={timetable.max_periods_per_day}
                 />
             {/each}
         </tr>

@@ -1,5 +1,6 @@
 <script>
-    import TimetableAll from "./TimetableAll.svelte";
+    import TimetableAllClasses from "./TimetableAllClasses.svelte";
+    import TimetableAllTeachers from "./TimetableAllTeachers.svelte";
     import TimetableClass from "./TimetableClass.svelte";
     import {
         STORE_timetable,
@@ -60,7 +61,7 @@
             JSON.stringify({
                 kind: "play",
                 tab: "timetable",
-                data: null,
+                data: timetable.table,
             })
         );
     }
@@ -104,11 +105,12 @@
         );
     }
 
-    let selectedView = "all";
+    let selectedView = "all-classes";
 </script>
 
 <select bind:value={selectedView} on:change={() => {}}>
-    <option value="all">ALL</option>
+    <option value="all-classes">ALL CLASSES</option>
+    <option value="all-teachers">ALL TEACHERS</option>
 
     {#each classes as c, key}
         <option value={key}>
@@ -118,6 +120,7 @@
 </select>
 <button on:click={handleInitialTimetable}>Initial timetable</button>
 {#if timetable.table}
+<div class="controls">
     <div class="buttons">
         <div class="play-pause">
             <button on:click={handlePlay}>Play</button>
@@ -132,8 +135,17 @@
         </div>
     </div>
 
-    {#if selectedView == "all"}
-        <TimetableAll {timetable} {classes} {subjects} {teachers} {rooms} />
+    <div class="inputs">
+        <input type="text" name="alpha">
+        <input type="text" name="t0">
+        <input type="text" name="sa_max">
+    </div>
+</div>
+
+    {#if selectedView == "all-classes"}
+        <TimetableAllClasses {timetable} {classes} {subjects} {teachers} {rooms} />
+    {:else if selectedView == "all-teachers"}
+        <TimetableAllTeachers {timetable} {classes} {subjects} {teachers} {rooms} />
     {:else}
         <TimetableClass
             class_index={selectedView}

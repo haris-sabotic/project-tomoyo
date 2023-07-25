@@ -1,5 +1,12 @@
 name,kind
-sala,sala
+M6,masinska
+M5,masinska
+M4,masinska
+M3,masinska
+M2,masinska
+M1,masinska
+Sala,sala
+Sala,sala
 23,computer
 22,regular
 21,regular
@@ -9,7 +16,7 @@ sala,sala
 17,regular
 16,regular
 15,regular
-14,computer
+14,vjezbe
 13,regular
 12,regular
 11,regular
@@ -23,9 +30,3 @@ sala,sala
 3,regular
 2,computer
 1,computer
-M1,vjezbe
-M2,vjezbe
-M3,vjezbe
-M4,vjezbe
-M5,vjezbe
-M6,vjezbe

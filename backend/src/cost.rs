@@ -86,9 +86,6 @@ pub fn hard_repeating_teachers(timetable: &Timetable) -> i32 {
 }
 
 /// Increment points by 1 for every hole in a class timetable
-///
-///
-/// WATCH OUT TO COUNT THE NUMBER OF HOLES, NOT CLASSES AFTER A HOLE (or whatever the fuck the previous solution did)!!!
 pub fn hard_holes_in_class_timetable(timetable: &Timetable) -> i32 {
     let mut points: i32 = 0;
 
@@ -369,11 +366,17 @@ pub fn soft_teacher_class_spread(timetable: &Timetable, teacher_table: &Vec<Teac
                 }
             }
 
+            /*
             if day_class_count > ideal_spread {
                 points += 1;
             }
 
             if day_class_count == 1 {
+                points += 1;
+            }
+            */
+
+            if day_class_count >= 6 || day_class_count == 1 {
                 points += 1;
             }
         }
@@ -417,13 +420,18 @@ pub fn soft_holes_in_teacher_timetable(
                 }
             }
 
+            let mut holes = 0;
             for period in start..end {
                 let index = day * timetable.max_periods_per_day + period;
 
                 match slots.slots[index as usize] {
-                    TeacherSlot::Empty => points += 1,
+                    TeacherSlot::Empty => holes += 1,
                     _ => {}
                 }
+            }
+
+            if holes >= 2 {
+                points += 1;
             }
         }
     }

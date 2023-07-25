@@ -6,23 +6,33 @@
     export let teachers;
     export let rooms;
     export let max_periods_per_day;
+    
+    export let selected;
+    export let onClick;
 
-    function htmlClass() {
+    $: htmlClass = () => {
+        let result = ""
+
         if (day_separators) {
-            return slot_index % max_periods_per_day == 0
+            result += slot_index % max_periods_per_day == 0
                 ? "day-begin"
                 : (slot_index + 1) % max_periods_per_day == 0
                 ? "day-end"
                 : "";
         }
 
-        return "";
+        if (selected) {
+            result += " selected";
+        }
+
+        return result;
     }
 </script>
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 {#if slot["Single"]}
     {#if slot["Single"]["PartiallyFilled"]}
-        <td class={htmlClass()}>
+        <td class={htmlClass()} on:click={onClick}>
             <div class="content">
                 <p class="subject">
                     {subjects[slot["Single"]["PartiallyFilled"].subject].name}
@@ -33,7 +43,7 @@
             </div>
         </td>
     {:else if slot["Single"]["Filled"]}
-        <td class={htmlClass()}>
+        <td class={htmlClass()} on:click={onClick}>
             <div class="content">
                 <p class="subject">
                     {subjects[slot["Single"]["Filled"].subject].name}
@@ -45,10 +55,10 @@
             </div>
         </td>
     {:else}
-        <td class={htmlClass()}><em>{slot["Single"]}</em></td>
+        <td class={htmlClass()} on:click={onClick}></td>
     {/if}
 {:else}
-    <td class="split {htmlClass()}">
+    <td class="split {htmlClass()} before-{slot["Double"]["before"]} after-{slot["Double"]["after"]}" on:click={onClick}>
         <div class="split-content">
             {#if slot["Double"]["first"]["PartiallyFilled"]}
                 <div class="content">
@@ -77,7 +87,7 @@
                     </p>
                 </div>
             {:else}
-                <p><em>{slot["Double"]["first"]}</em></p>
+                <p></p>
             {/if}
 
             {#if slot["Double"]["second"]["PartiallyFilled"]}
@@ -107,7 +117,7 @@
                     </p>
                 </div>
             {:else}
-                <p><em>{slot["Double"]["second"]}</em></p>
+                <p></p>
             {/if}
         </div>
     </td>
@@ -118,6 +128,14 @@
         border: 1px solid black;
         margin: 0;
         padding: 10px;
+    }
+
+    td:hover {
+        background-color: rgb(230, 230, 230);
+    }
+    
+    .selected {
+        background-color: rgb(200, 200, 200) !important;
     }
 
     .content {

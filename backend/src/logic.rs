@@ -5,7 +5,7 @@ use std::{
         atomic::{AtomicBool, Ordering},
         Arc,
     },
-    vec,
+    unreachable, vec,
 };
 
 use project_tomoyo::*;
@@ -13,7 +13,7 @@ use rand::{thread_rng, Rng};
 use serde::{Deserialize, Serialize};
 use ws::Sender;
 
-use crate::{cost, util};
+use crate::{cost, send_timetable, util};
 
 #[derive(Clone, Copy, Serialize, Deserialize, Debug)]
 pub enum SlotData {
@@ -87,14 +87,15 @@ impl Timetable {
 
         let mut c = 0;
         for class_slots in table.iter_mut() {
-            print!("{}, {:?}", c, self.data.classes[c]);
+            println!("{}, {:?}", c, self.data.classes[c]);
             class_slots.class_index = c as u32;
             class_slots.slots.resize(
                 5 * self.max_periods_per_day as usize,
                 Slot::Single(SlotData::Empty),
             );
 
-            let mut class_relations: Vec<&Relation> = self
+            // get all relations of the current class
+            let class_relations: Vec<&Relation> = self
                 .data
                 .relations
                 .iter()
@@ -107,326 +108,271 @@ impl Timetable {
                 })
                 .collect();
 
-            let counts: Vec<(u32, Option<u32>)> = class_relations
-                .iter()
-                .map(|x| (x.per_week_first, x.per_week_second))
-                .collect();
-            let sum = counts.iter().fold(0, |acc, x| {
-                let (x1, x2) = x;
-                let mut result = acc + x1;
+            for relation in class_relations.iter() {
+                println!(
+                    "T: {},  S: {},  F: {},  S: {:?}",
+                    self.data.teachers[relation.teacher].name,
+                    self.data.subjects[relation.subject].name,
+                    relation.per_week_first,
+                    relation.per_week_second
+                );
 
-                match x2 {
-                    Some(v) => result += v,
-                    None => {}
-                }
+                let relation_slot = SlotData::PartiallyFilled {
+                    teacher: relation.teacher,
+                    subject: relation.subject,
+                };
 
-                result
-            });
-            println!("  {} {:?}", sum, counts);
-
-            let mut i = 0;
-            while i < class_slots.slots.len() {
-                if let Some(relation) = class_relations.pop() {
-                    let per_week_first = relation.per_week_first;
-
-                    println!("Teacher: {:?} \nSubject: {:?} \nClass: {:?} \nPer week first: {:?} \nPer week second: {:?}\n", self.data.teachers[relation.teacher], self.data.subjects[relation.subject], self.data.classes[relation.class], relation.per_week_first, relation.per_week_second);
-
-                    match relation.per_week_second {
-                        // single relation
-                        None => {
-                            for j in 0..per_week_first {
-                                class_slots.slots[i + j as usize] =
-                                    Slot::Single(SlotData::PartiallyFilled {
-                                        teacher: relation.teacher,
-                                        subject: relation.subject,
-                                    });
-                            }
-
-                            i += per_week_first as usize - 1;
-                        }
-                        // double relation
-                        Some(per_week_second) => {
-                            let mut placed = false;
-
-                            // start searching from the start up until where you last placed a slot and try to place all of the relation's first group's classes into consecutive slots
-                            for j in 0..i {
-                                match class_slots.slots[j] {
-                                    Slot::Single(_) => {}
-
-                                    // if it's a double slot
-                                    Slot::Double {
-                                        first,
-                                        second,
-                                        before,
-                                        after,
-                                    } => {
-                                        // if it's the start of per_week_first consecutive double blocks
-                                        if before == 0 && after == (per_week_first - 1) {
-                                            match (first, second) {
-                                                // if the first slots are all empty
-                                                (SlotData::Empty, _) => {
-                                                    let mut different = true;
-                                                    match second {
-                                                        SlotData::PartiallyFilled {
-                                                            teacher,
-                                                            ..
-                                                        } => {
-                                                            if teacher == relation.teacher {
-                                                                different = false;
-                                                            }
-                                                        }
-
-                                                        _ => {}
-                                                    }
-
-                                                    if different {
-                                                        // place all of the relations first group's classes in the empty slots
-                                                        for k in 0..per_week_first {
-                                                            match class_slots.slots[j + k as usize] {
-                                                            Slot::Double {
-                                                                second,
-                                                                before,
-                                                                after,
-                                                                ..
-                                                            } => class_slots.slots
-                                                                [j + k as usize] =
-                                                                Slot::Double {
-                                                                    first:
-                                                                        SlotData::PartiallyFilled {
-                                                                            teacher: relation
-                                                                                .teacher,
-                                                                            subject: relation
-                                                                                .subject,
-                                                                        },
-                                                                    second,
-                                                                    before,
-                                                                    after,
-                                                                },
-
-                                                            _ => {}
-                                                        }
-                                                        }
-
-                                                        placed = true;
-                                                        break;
-                                                    }
-                                                }
-                                                // if the second slots are all empty
-                                                (_, SlotData::Empty) => {
-                                                    let mut different = true;
-                                                    match first {
-                                                        SlotData::PartiallyFilled {
-                                                            teacher,
-                                                            ..
-                                                        } => {
-                                                            if teacher == relation.teacher {
-                                                                different = false;
-                                                            }
-                                                        }
-
-                                                        _ => {}
-                                                    }
-
-                                                    if different {
-                                                        // place all of the relations first group's classes in the empty slots
-                                                        for k in 0..per_week_first {
-                                                            match class_slots.slots[j + k as usize] {
-                                                            Slot::Double {
-                                                                first,
-                                                                before,
-                                                                after,
-                                                                ..
-                                                            } => class_slots.slots
-                                                                [j + k as usize] =
-                                                                Slot::Double {
-                                                                    first,
-                                                                    second:
-                                                                        SlotData::PartiallyFilled {
-                                                                            teacher: relation
-                                                                                .teacher,
-                                                                            subject: relation
-                                                                                .subject,
-                                                                        },
-                                                                    before,
-                                                                    after,
-                                                                },
-
-                                                            _ => {}
-                                                        }
-                                                        }
-
-                                                        placed = true;
-                                                        break;
-                                                    }
-                                                }
-                                                _ => {}
-                                            }
-                                        }
+                match relation.per_week_second {
+                    // single relation
+                    None => {
+                        for i in 0..class_slots.slots.len() {
+                            match class_slots.slots[i] {
+                                Slot::Single(SlotData::Empty) => {
+                                    for j in 0..relation.per_week_first {
+                                        class_slots.slots[i + j as usize] =
+                                            Slot::Single(relation_slot);
                                     }
-                                }
-                            }
 
-                            if !placed {
-                                for j in 0..per_week_first {
-                                    class_slots.slots[i + j as usize] = Slot::Double {
-                                        first: SlotData::PartiallyFilled {
-                                            teacher: relation.teacher,
-                                            subject: relation.subject,
-                                        },
-                                        second: SlotData::Empty,
-                                        before: j,
-                                        after: per_week_first - j - 1,
-                                    };
+                                    break;
                                 }
 
-                                i += per_week_first as usize - 1;
+                                _ => {}
                             }
+                        }
 
-                            // SAME THING EXCEPT FOR THE SECOND GROUP
-                            // ======================================
-                            if per_week_second != 0 {
-                                placed = false;
+                        //println!("    Placed");
+                    }
 
-                                for j in 0..i {
-                                    match class_slots.slots[j] {
-                                        Slot::Single(_) => {}
+                    // double relation
+                    Some(per_week_second) => {
+                        let per_week_first = relation.per_week_first;
 
-                                        // if it's a double slot
-                                        Slot::Double {
-                                            first,
-                                            second,
-                                            before,
-                                            after,
-                                        } => {
-                                            // if it's the start of per_week_second consecutive double blocks
-                                            if before == 0 && after == (per_week_second - 1) {
-                                                match (first, second) {
-                                                    // if the first slots are all empty
-                                                    (SlotData::Empty, _) => {
-                                                        let mut different = true;
-                                                        match second {
-                                                            SlotData::PartiallyFilled {
-                                                                teacher,
-                                                                ..
-                                                            } => {
-                                                                if teacher == relation.teacher {
-                                                                    different = false;
-                                                                }
-                                                            }
+                        //print!("    Placed");
 
-                                                            _ => {}
-                                                        }
+                        let mut first_group_placed = false;
 
-                                                        if different {
-                                                            // place all of the relations second group's classes in the empty slots
-                                                            for k in 0..per_week_second {
-                                                                match class_slots.slots[j + k as usize] {
-                                                            Slot::Double {
-                                                                second,
-                                                                before,
-                                                                after,
-                                                                ..
-                                                            } => class_slots.slots
-                                                                [j + k as usize] =
-                                                                Slot::Double {
-                                                                    first:
-                                                                        SlotData::PartiallyFilled {
-                                                                            teacher: relation
-                                                                                .teacher,
-                                                                            subject: relation
-                                                                                .subject,
-                                                                        },
-                                                                    second,
-                                                                    before,
-                                                                    after,
-                                                                },
-
-                                                            _ => {}
-                                                        }
-                                                            }
-
-                                                            placed = true;
-                                                            break;
-                                                        }
-                                                    }
-                                                    // if the second slots are all empty
-                                                    (_, SlotData::Empty) => {
-                                                        let mut different = true;
-                                                        match first {
-                                                            SlotData::PartiallyFilled {
-                                                                teacher,
-                                                                ..
-                                                            } => {
-                                                                if teacher == relation.teacher {
-                                                                    different = false;
-                                                                }
-                                                            }
-
-                                                            _ => {}
-                                                        }
-
-                                                        if different {
-                                                            // place all of the relations second group's classes in the empty slots
-                                                            for k in 0..per_week_second {
-                                                                match class_slots.slots[j + k as usize] {
-                                                            Slot::Double {
-                                                                first,
-                                                                before,
-                                                                after,
-                                                                ..
-                                                            } => class_slots.slots
-                                                                [j + k as usize] =
-                                                                Slot::Double {
-                                                                    first,
-                                                                    second:
-                                                                        SlotData::PartiallyFilled {
-                                                                            teacher: relation
-                                                                                .teacher,
-                                                                            subject: relation
-                                                                                .subject,
-                                                                        },
-                                                                    before,
-                                                                    after,
-                                                                },
-
-                                                            _ => {}
-                                                        }
-                                                            }
-
-                                                            placed = true;
-                                                            break;
+                        for i in 0..class_slots.slots.len() {
+                            match class_slots.slots[i] {
+                                Slot::Double {
+                                    first,
+                                    second,
+                                    before,
+                                    after,
+                                } => {
+                                    if before == 0 && after >= per_week_first - 1 {
+                                        match (first, second) {
+                                            (SlotData::Empty, _) => {
+                                                // don't place in the double block if the teacher is the same
+                                                match second {
+                                                    SlotData::PartiallyFilled {
+                                                        teacher, ..
+                                                    } => {
+                                                        if teacher == relation.teacher {
+                                                            continue;
                                                         }
                                                     }
                                                     _ => {}
                                                 }
+
+                                                for j in 0..per_week_first {
+                                                    let (_before, _after) =
+                                                        match class_slots.slots[i + j as usize] {
+                                                            Slot::Single(_) => unreachable!(),
+                                                            Slot::Double {
+                                                                before, after, ..
+                                                            } => (before, after),
+                                                        };
+
+                                                    class_slots.slots[i + j as usize] =
+                                                        Slot::Double {
+                                                            first: relation_slot,
+                                                            second: second,
+                                                            before: _before,
+                                                            after: _after,
+                                                        };
+                                                }
+
+                                                first_group_placed = true;
+
+                                                break;
                                             }
+
+                                            (_, SlotData::Empty) => {
+                                                // don't place in the double block if the teacher is the same
+                                                match first {
+                                                    SlotData::PartiallyFilled {
+                                                        teacher, ..
+                                                    } => {
+                                                        if teacher == relation.teacher {
+                                                            continue;
+                                                        }
+                                                    }
+                                                    _ => {}
+                                                }
+
+                                                for j in 0..per_week_first {
+                                                    let (_before, _after) =
+                                                        match class_slots.slots[i + j as usize] {
+                                                            Slot::Single(_) => unreachable!(),
+                                                            Slot::Double {
+                                                                before, after, ..
+                                                            } => (before, after),
+                                                        };
+
+                                                    class_slots.slots[i + j as usize] =
+                                                        Slot::Double {
+                                                            first: first,
+                                                            second: relation_slot,
+                                                            before: _before,
+                                                            after: _after,
+                                                        };
+                                                }
+
+                                                first_group_placed = true;
+
+                                                break;
+                                            }
+
+                                            _ => {}
                                         }
                                     }
                                 }
 
-                                if !placed {
-                                    for j in 0..per_week_second {
-                                        class_slots.slots[i + j as usize] = Slot::Double {
-                                            first: SlotData::PartiallyFilled {
-                                                teacher: relation.teacher,
-                                                subject: relation.subject,
-                                            },
-                                            second: SlotData::Empty,
-                                            before: j,
-                                            after: per_week_second - j - 1,
+                                Slot::Single(SlotData::Empty) => {
+                                    if !first_group_placed {
+                                        for j in 0..per_week_first {
+                                            class_slots.slots[i + j as usize] = Slot::Double {
+                                                first: relation_slot,
+                                                second: SlotData::Empty,
+                                                before: j,
+                                                after: per_week_first - j - 1,
+                                            };
                                         }
-                                    }
 
-                                    i += per_week_second as usize - 1;
+                                        break;
+                                    }
                                 }
+
+                                _ => {}
                             }
                         }
+
+                        //print!(" first");
+
+                        let mut second_group_placed = false;
+
+                        for i in 0..class_slots.slots.len() {
+                            match class_slots.slots[i] {
+                                Slot::Double {
+                                    first,
+                                    second,
+                                    before,
+                                    after,
+                                } => {
+                                    if before == 0 && after >= per_week_second - 1 {
+                                        match (first, second) {
+                                            (SlotData::Empty, _) => {
+                                                // don't place in the double block if the teacher is the same
+                                                match second {
+                                                    SlotData::PartiallyFilled {
+                                                        teacher, ..
+                                                    } => {
+                                                        if teacher == relation.teacher {
+                                                            continue;
+                                                        }
+                                                    }
+                                                    _ => {}
+                                                }
+
+                                                for j in 0..per_week_second {
+                                                    let (_before, _after) =
+                                                        match class_slots.slots[i + j as usize] {
+                                                            Slot::Single(_) => unreachable!(),
+                                                            Slot::Double {
+                                                                before, after, ..
+                                                            } => (before, after),
+                                                        };
+
+                                                    class_slots.slots[i + j as usize] =
+                                                        Slot::Double {
+                                                            first: relation_slot,
+                                                            second: second,
+                                                            before: _before,
+                                                            after: _after,
+                                                        };
+                                                }
+
+                                                second_group_placed = true;
+
+                                                break;
+                                            }
+
+                                            (_, SlotData::Empty) => {
+                                                // don't place in the double block if the teacher is the same
+                                                match first {
+                                                    SlotData::PartiallyFilled {
+                                                        teacher, ..
+                                                    } => {
+                                                        if teacher == relation.teacher {
+                                                            continue;
+                                                        }
+                                                    }
+                                                    _ => {}
+                                                }
+
+                                                for j in 0..per_week_second {
+                                                    let (_before, _after) =
+                                                        match class_slots.slots[i + j as usize] {
+                                                            Slot::Single(_) => unreachable!(),
+                                                            Slot::Double {
+                                                                before, after, ..
+                                                            } => (before, after),
+                                                        };
+
+                                                    class_slots.slots[i + j as usize] =
+                                                        Slot::Double {
+                                                            first: first,
+                                                            second: relation_slot,
+                                                            before: _before,
+                                                            after: _after,
+                                                        };
+                                                }
+
+                                                second_group_placed = true;
+
+                                                break;
+                                            }
+
+                                            _ => {}
+                                        }
+                                    }
+                                }
+
+                                Slot::Single(SlotData::Empty) => {
+                                    if !second_group_placed {
+                                        for j in 0..per_week_second {
+                                            class_slots.slots[i + j as usize] = Slot::Double {
+                                                first: relation_slot,
+                                                second: SlotData::Empty,
+                                                before: j,
+                                                after: per_week_second - j - 1,
+                                            };
+                                        }
+
+                                        break;
+                                    }
+                                }
+
+                                _ => {}
+                            }
+                        }
+
+                        //println!(" and second");
                     }
                 }
-
-                i += 1;
             }
 
+            println!("");
             c += 1;
         }
 
@@ -534,6 +480,18 @@ impl Timetable {
         println!(" (s) Teacher holes: {}", cost6);
     }
 
+    //
+    //
+    //
+    //
+    //
+    // TODO: sticky slots and rooms with multiple tags
+    //
+    //
+    //
+    //
+    //
+
     pub fn generate_neighbor(&self, _out: &Sender) -> Self {
         let mut rng = thread_rng();
 
@@ -543,9 +501,12 @@ impl Timetable {
 
         let mut start_index = rng.gen_range(0..timetable.table[class_index].slots.len());
 
+        // println!("Class: {}", self.data.classes[class_index].name);
         match timetable.table[class_index].slots[start_index] {
             Slot::Single(_) => {
                 let mut end_index = rng.gen_range(0..timetable.table[class_index].slots.len());
+
+                // println!("{} - {}", start_index, end_index);
 
                 // regenerate if the slot at `end_index` is a Double block
                 loop {
@@ -568,6 +529,7 @@ impl Timetable {
                 before: before_start,
                 after: after_start,
             } => {
+                // println!("Before start: {}", before_start);
                 // set start index to the start of this double block
                 start_index -= before_start as usize;
                 let length = before_start + after_start + 1;
@@ -580,6 +542,8 @@ impl Timetable {
 
                     let index = day * timetable.max_periods_per_day
                         + rng.gen_range(0..(timetable.max_periods_per_day - length));
+
+                    // println!("{} - {}", start_index, index);
 
                     match timetable.table[class_index].slots[index as usize] {
                         Slot::Single(_) => {
@@ -619,20 +583,20 @@ impl Timetable {
                             after: after_end,
                         } => {
                             // if it's a double block of the same length
-                            if before_end == 0 && after_end == length - 1 {
+                            if before_end + 1 + after_end == length {
                                 for j in 0..length {
                                     let a = timetable.table[class_index].slots
                                         [start_index + j as usize]
                                         .clone();
                                     let b = timetable.table[class_index].slots
-                                        [index as usize + j as usize]
+                                        [index as usize - before_end as usize + j as usize]
                                         .clone();
 
                                     timetable.table[class_index].slots[start_index + j as usize] =
                                         b;
 
                                     timetable.table[class_index].slots
-                                        [index as usize + j as usize] = a;
+                                        [index as usize - before_end as usize + j as usize] = a;
                                 }
 
                                 done = true;
@@ -642,6 +606,10 @@ impl Timetable {
                 }
             }
         }
+
+        // println!("=================\n");
+
+        // send_timetable(&timetable, _out);
 
         timetable
     }

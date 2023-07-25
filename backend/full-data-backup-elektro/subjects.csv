@@ -1,39 +1,28 @@
 name,kind
-Upravljanje elektromotornim pogonima,regular
-Izvodjenje elektricnih instalacija i osvjetljenja,regular
-Proizvodnja elektricne energije,regular
-Osnove elektrotehnike II,regular
-Osnove elektrotehnike I,regular
-Engleski jezik u elektroenergetici,regular
-Engleski jezik u elektronskim komunikacijama,regular
+Autoelektronika,masinska
 Engleski jezik u elektronici,regular
+Projektovanje u elektronici i automatici,masinska
+Proizvodnja elektronskih uredjaja i sistema (T),regular
+Sistemi industrijske elektronike i automatike (T),masinska
+Elektronski komercijalni sistemi (T),regular
+Elektronski komercijalni uredjaji (T),regular
+Video tehnika,regular
+Engleski jezik u elektronskim komunikacijama,regular
+Projektovanje telekomunikacionih korisnickih sistema,computer
+Opticki komunikacioni sistemi (T),regular
+Bezicni komunikacioni sistemi,regular
+Telekomunikacioni korisnicki sistemi II (T),regular
+Komutacioni i data centri,regular
 Engleski jezik u racunarstvu,regular
-Engleski jezik u informacionim tehnologijama,regular
-zabrana poglavlja iz matematike IV,regular
-Principi energetske efikasnosti,regular
-IoT sistemi,regular
-Fotografija (P),computer
-Fotografija (T),regular
-Uvod u elektronske komunikacije,regular
-Izabrana poglavlja iz matematike III,regular
-Poslovna komunikacija i korespondencija,regular
-Fizicko,sala
-Informatika,computer
-Socijalne mreze i globalizacija,regular
-Izvori elektricne energije,regular
-3D grafika,computer
-Uvod u elektroniku (P),computer
-Uvod u elektroniku (T),regular
-Savremeno odrastanje,regular
-Izabrana poglavlja iz osnova elektrotehnike (P),computer
-Izabrana poglavlja iz osnova elektrotehnike (T),regular
-Osnove racunarskog hardvera (P),computer
-Osnove racunarskog hardvera (T),regular
-Ekologija i zastita zivotne sredine,regular
-Geografija,regular
-Istorija,regular
+Projektovanje racunarskih mreza,masinska
+Zastita racunarskih sistema i mreza (P),masinska
+Zastita racunarskih sistema i mreza (T),regular
+Instaliranje i odrzavanje racunarskih mreza (T),regular
+Aplikativni softver (P),computer
+Aplikativni softver (T),regular
+Multimedijalni servisi,regular
 Poslovna kultura,regular
-Upravljanje softverskim projektima (P),computer
+Engleski jezik u informacionim tehnologijama,regular
 Upravljanje softverskim projektima (T),regular
 Napredno front-end programiranje (P),computer
 Napredno front-end programiranje (T),regular
@@ -41,79 +30,60 @@ Razvoj mobilnih aplikacija II (P),computer
 Razvoj mobilnih aplikacija II (T),regular
 Razvoj veb aplikacija II (P),computer
 Razvoj veb aplikacija II (T),regular
-Preduzetnistvo,regular
-Produkcija multimedijalnog sadrzaja (P),computer
-Produkcija multimedijalnog sadrzaja (T),regular
-Veb i mobilni komunikacioni servisi (T),regular
-Veb i mobilni komunikacioni servisi (P),computer
-Razvoj mobilnih aplikacija I (T),regular
-Razvoj mobilnih aplikacija I (P),computer
-Razvoj veb aplikacija I (T),regular
-Razvoj veb aplikacija I (P),regular
+Savremeno odrastanje,regular
+Elektrotehnicki materijali,regular
+Osnove programiranja (T),computer
+Elektronske komunikacije,regular
+Osnove proceduralnog programiranja (P),computer
+Osnove proceduralnog programiranja (T),regular
+Izvodjenje telekomunikacionih instalacija (P),masinska
+Izvodjenje telekomunikacionih instalacija (T),regular
+Elektronske komunikacije II,regular
+Racunarska grafika i animacija,computer
+Fotografija (P),computer
+Fotografija (T),regular
+Analogna i digitalna elektronika (P),vjezbe
+Analogna i digitalna elektronika (T),regular
+Racunarski hardver (T),regular
+Osnove racunarskih mreza,regular
+Osnove elektrotehnike II,regular
+Osnove racunarskog hardvera (P),computer
+Osnove racunarskog hardvera (T),regular
 Upravljanje bazama podataka (P),computer
 Upravljanje bazama podataka (T),regular
 Veb i mobilni dizajn (P),computer
 Veb i mobilni dizajn (T),regular
-Objektno orijentisano programiranje (P),computer
-Objektno orijentisano programiranje (T),regular
+Objektno-orijentisano programiranje (P),computer
+Objektno-orijentisano programiranje (T),regular
 Uvod u veb programiranje (P),computer
 Uvod u veb programiranje (T),regular
-Operativni sistemi (P),computer
-Operativni sistemi (T),regular
-Osnove racunarstva (P),computer
-Osnove racunarstva (T),regular
+CSBH,regular
+Fizicko,sala
 Sociologija,regular
-Fizika,regular
+Preduzetnistvo,regular
 Geografija,regular
 Hemija,regular
-Preduzetnistvo,regular
 Engleski,regular
-CSBH,regular
+Informatika,computer
+Fizika,regular
 Matematika,regular
-Distribucija i potrosnja elektricne energije,regular
-Projektovanje u elektroenergetici,regular
-Elektronske komunikacije I,regular
-Elektronske komunikacije II,regular
-Elektrotehnicki materijali,regular
-Eksploatacija elektroenergetskih sistema,regular
-Osnove elektrotehnike I,regular
-Osnove elektrotehnike II,regular
-Energetska efikasnost,regular
-Specijalne elektricne instalacije,regular
-Elektroinstalaterski radovi u gradjevinskim objektima,regular
-Analogna i digitalna elektronika,regular
-Elektronika u elektroenergetici,regular
-Osnove proceduralnog programiranja,computer
-Osnove programiranja (T),regular
-Osnove programiranja (P),computer
-Projektovanje u elektronici i automatici,regular
-Multimedijalni servisi,regular
-Projektovanje telekomunikacionih korisnickih sistema,computer
-Uvod u izgradnju elektronske komunikacione infrastrukture,regular
-Instaliranje i odrzavanje racunarskih mreza,regular
-Projektovanje racunarskih mreza,regular
-Opticki komunikacioni sistemi,regular
-Racunarski hardver,regular
-Izvodjenje telekomunikacionih instalacija,regular
-Sistemi industrijske elektronike i automatike,regular
-Video tehnika,regular
-Elektronski komercijalni sistemi,regular
-Elektronski komercijalni uredjaj,regular
-Uvod u veb programiranje (T),regular
-Uvod u veb programiranje (P),regular
-Napredno front-end programiranje (T),regular
-Napredno front-end programiranje (P),regular
-Aplikativni softver (T),regular
-Aplikativni softver (P),computer
-Telekomunikacioni korisnicki sistemi I,regular
-Telekomunikacioni korisnicki sistemi II,regular
-Osnove racunarskih mreza,regular
-Zastita racunarskih sistema i mreza,regular
-Bezicni komunikacioni sistemi,regular
-Proizvodnja elektronskih uredjaja i sistema,regular
-Izgradnja elektronske komunikacione infrastrukture,regular
-Komunitacioni i data centri,regular
-Autoelektronika,regular
-Racunarska grafika i animacija (T),regular
-Racunarska grafika i animacija (P),computer
-Pripremni i pomocni radovi u izgradnji elektronske komunikacione infrastrukture,regular
+Analogna elektronika (P),regular
+Analogna elektronika (T),regular
+Osnove programiranja (P),regular
+Instaliranje i odrzavanje racunarskih mreza (P),masinska
+Racunarski hardver (P),vjezbe
+Elektronski komercijalni sistemi (P),masinska
+Elektronski komercijalni uredjaji (P),masinska
+Upravljanje softverskim projektima (P),computer
+Telekomunikacioni korisnicki sistemi II (P),regular
+Bezicni komutacioni centri (T),regular
+Bezicni komutacioni centri (P),regular
+Proizvodnja elektronskih uredjaja i sistema (P),masinska
+Komutacioni i data sistemi (T),regular
+Komutacioni i data sistemi (P),regular
+Opticki komunikacioni sistemi (P),regular
+Sistemi industrijske elektronike i automatike (P),masinska
+Uvod u instalacije elektronskih uredjaja i sistema (T),regular
+Uvod u instalacije elektronskih uredjaja i sistema (P),masinska
+Uvod u izgradnju elektronske komunikacione infrastrukture (T),regular
+Uvod u izgradnju elektronske komunikacione infrastrukture (P),masinska
