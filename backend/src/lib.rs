@@ -8,7 +8,7 @@ pub struct Class {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Room {
     pub name: String,
-    pub kind: String,
+    pub kinds: Vec<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

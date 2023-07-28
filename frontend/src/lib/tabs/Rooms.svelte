@@ -4,7 +4,7 @@
     import { socket, STORE_rooms } from "../store";
 
     let roomName = "";
-    let roomKind = "";
+    let roomKinds = "";
     let rooms = [];
 
     STORE_rooms.subscribe((value) => {
@@ -48,29 +48,29 @@
 <form
     on:submit|preventDefault={() => {
         let name = roomName.trim();
-        let kind = roomKind.trim();
+        let kinds = roomKinds.trim();
 
-        if (name.length > 0 && kind.length > 0) {
+        if (name.length > 0 && kinds.length > 0) {
             socket.send(
                 JSON.stringify({
                     kind: "list",
                     tab: "rooms",
-                    data: [{ name: name, kind: kind }].concat(rooms),
+                    data: [{ name: name, kinds: kinds }].concat(rooms),
                 })
             );
         }
     }}
 >
     <input bind:value={roomName} type="text" placeholder="Room name" />
-    <input bind:value={roomKind} type="text" placeholder="Room kind" />
+    <input bind:value={roomKinds} type="text" placeholder="Room kind" />
     <button>OK</button>
 </form>
 
 <div class="list-wrapper">
     <div class="list">
-        {#each rooms as { name, kind }, key}
+        {#each rooms as { name, kinds }, key}
             <p>{name}</p>
-            <p>{kind}</p>
+            <p>{kinds}</p>
             <button
                 on:click={() => {
                     socket.send(

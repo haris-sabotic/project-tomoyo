@@ -1,5 +1,6 @@
 use csv::{Reader, Writer};
 use logic::ClassSlots;
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::{
     fs,
@@ -9,6 +10,7 @@ use std::{
     },
     thread,
     time::Instant,
+    vec,
 };
 use ws::{Builder, Handler, Handshake, Message, Sender, Settings};
 
@@ -24,6 +26,12 @@ pub mod logic;
 
 pub mod util;
 use util::*;
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+struct RoomRecord {
+    name: String,
+    kinds: String,
+}
 
 const MAX_PERIODS_PER_DAY: u32 = 7;
 
@@ -80,9 +88,11 @@ impl Handler for Server {
 
                         timetable.data.rooms.clear();
                         for v in data.iter() {
+                            let kinds: String = String::from(v["kinds"].as_str().unwrap());
+
                             timetable.data.rooms.push(Room {
                                 name: String::from(v["name"].as_str().unwrap()),
-                                kind: String::from(v["kind"].as_str().unwrap()),
+                                kinds: kinds.split(' ').map(str::to_string).collect(),
                             })
                         }
                     }
@@ -177,6 +187,10 @@ impl Handler for Server {
                 send_timetable(&timetable, &self.out);
             }
 
+            Some("detailed_cost") => {
+                timetable.detailed_cost();
+            }
+
             _ => panic!("Invalid message."),
         }
 
@@ -208,8 +222,13 @@ fn handle_import(timetable: &mut Timetable, parsed_msg: &Value, out: &Sender) {
                 }
                 "rooms" => {
                     for result in rdr.deserialize() {
-                        let record: Room = result.unwrap();
-                        timetable.data.rooms.push(record);
+                        let record: RoomRecord = result.unwrap();
+
+                        let room: Room = Room {
+                            name: record.name,
+                            kinds: record.kinds.split(' ').map(str::to_string).collect(),
+                        };
+                        timetable.data.rooms.push(room);
                     }
                     send_rooms(&out, &timetable.data.rooms);
                 }

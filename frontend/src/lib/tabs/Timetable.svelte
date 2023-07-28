@@ -104,6 +104,16 @@
             })
         );
     }
+    
+    function handleDetailedCost() {
+        socket.send(
+            JSON.stringify({
+                kind: "detailed_cost",
+                tab: "timetable",
+                data: null,
+            })
+        );
+    }
 
     let selectedView = "all-classes";
 </script>
@@ -128,6 +138,7 @@
         </div>
 
         <button on:click={handleFillRooms}>Fill rooms</button>
+        <button on:click={handleDetailedCost}>Detailed cost</button>
 
         <div class="import-export">
             <button on:click={handleImport}>Import</button>

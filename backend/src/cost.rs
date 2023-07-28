@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, println, vec};
 
 use crate::{
     logic::{Slot, SlotData, Timetable},
@@ -165,10 +165,7 @@ pub fn hard_holes_in_class_timetable(timetable: &Timetable) -> i32 {
 /// Increment points by 1 for each period during which too many classes are being held with the same kind
 ///
 /// Example: During the 2nd period of Tuesday, 5 IT classes are being held, when there's only 3 computer classrooms in the school
-pub fn hard_too_many_subjects_of_same_kind(
-    timetable: &Timetable,
-    room_kinds_count: &HashMap<String, u32>,
-) -> i32 {
+pub fn hard_too_many_subjects_of_same_kind(timetable: &Timetable) -> i32 {
     let mut points = 0;
 
     for period in 0..(timetable.max_periods_per_day * 5) {
@@ -233,9 +230,34 @@ pub fn hard_too_many_subjects_of_same_kind(
             }
         }
 
-        for kind in subject_kinds_count.keys() {
-            if subject_kinds_count[kind] > room_kinds_count[kind] {
-                points += 1;
+        // println!("{:?}", subject_kinds_count);
+        let mut used_rooms: Vec<usize> = vec![];
+        for kind in [
+            "sala", "vjezbe", "masinska", "computer", "laptop", "regular",
+        ] {
+            let mut found_rooms = false;
+            match subject_kinds_count.get(kind) {
+                Some(n) => {
+                    for _ in 0..(*n) {
+                        found_rooms = false;
+
+                        for i in 0..timetable.data.rooms.len() {
+                            if !used_rooms.contains(&i)
+                                && timetable.data.rooms[i].kinds.contains(&kind.to_string())
+                            {
+                                used_rooms.push(i);
+                                found_rooms = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if !found_rooms {
+                        // println!("NOT FOUND: {}", kind);
+                        points += 1;
+                    }
+                }
+                None => {}
             }
         }
     }

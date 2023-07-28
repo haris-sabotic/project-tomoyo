@@ -25,7 +25,7 @@ pub fn send_rooms(sender: &Sender, rooms: &Vec<Room>) {
     data.reserve(rooms.len());
 
     for room in rooms.iter() {
-        data.push(json!({"name": room.name.as_str(), "kind": room.kind.as_str()}));
+        data.push(json!({"name": room.name.as_str(), "kinds": room.kinds.join(" ")}));
     }
 
     let json = json!({
@@ -107,9 +107,11 @@ pub fn update_rooms(rooms: &mut Vec<Room>, data: &Value) {
             rooms.reserve(arr.len());
 
             for el in arr {
+                let kinds: String = String::from(el["kinds"].as_str().unwrap());
+
                 rooms.push(Room {
                     name: String::from(el["name"].as_str().unwrap()),
-                    kind: String::from(el["kind"].as_str().unwrap()),
+                    kinds: kinds.split(' ').map(str::to_string).collect(),
                 })
             }
         }

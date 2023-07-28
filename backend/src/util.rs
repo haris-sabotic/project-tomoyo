@@ -16,19 +16,6 @@ pub fn ws_send(sender: &Sender, json: &Value) {
     // println!("=====  MESSAGE SENT BY SERVER END  =====");
 }
 
-pub fn room_kinds_count(rooms: &Vec<Room>) -> HashMap<String, u32> {
-    let mut count: HashMap<String, u32> = HashMap::new();
-
-    for room in rooms.iter() {
-        count
-            .entry(room.kind.clone())
-            .and_modify(|c| *c += 1)
-            .or_insert(1);
-    }
-
-    count
-}
-
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub enum TeacherSlot {
     Empty,

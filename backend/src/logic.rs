@@ -160,6 +160,9 @@ impl Timetable {
                                     after,
                                 } => {
                                     if before == 0 && after >= per_week_first - 1 {
+                                        // offset at which to start replacing, so that empty spaces are at the start rather than the end
+                                        let offset = after + 1 - per_week_first;
+
                                         match (first, second) {
                                             (SlotData::Empty, _) => {
                                                 // don't place in the double block if the teacher is the same
@@ -175,15 +178,17 @@ impl Timetable {
                                                 }
 
                                                 for j in 0..per_week_first {
-                                                    let (_before, _after) =
-                                                        match class_slots.slots[i + j as usize] {
-                                                            Slot::Single(_) => unreachable!(),
-                                                            Slot::Double {
-                                                                before, after, ..
-                                                            } => (before, after),
-                                                        };
+                                                    let (_before, _after) = match class_slots.slots
+                                                        [i + j as usize + offset as usize]
+                                                    {
+                                                        Slot::Single(_) => unreachable!(),
+                                                        Slot::Double { before, after, .. } => {
+                                                            (before, after)
+                                                        }
+                                                    };
 
-                                                    class_slots.slots[i + j as usize] =
+                                                    class_slots.slots
+                                                        [i + j as usize + offset as usize] =
                                                         Slot::Double {
                                                             first: relation_slot,
                                                             second: second,
@@ -211,15 +216,17 @@ impl Timetable {
                                                 }
 
                                                 for j in 0..per_week_first {
-                                                    let (_before, _after) =
-                                                        match class_slots.slots[i + j as usize] {
-                                                            Slot::Single(_) => unreachable!(),
-                                                            Slot::Double {
-                                                                before, after, ..
-                                                            } => (before, after),
-                                                        };
+                                                    let (_before, _after) = match class_slots.slots
+                                                        [i + j as usize + offset as usize]
+                                                    {
+                                                        Slot::Single(_) => unreachable!(),
+                                                        Slot::Double { before, after, .. } => {
+                                                            (before, after)
+                                                        }
+                                                    };
 
-                                                    class_slots.slots[i + j as usize] =
+                                                    class_slots.slots
+                                                        [i + j as usize + offset as usize] =
                                                         Slot::Double {
                                                             first: first,
                                                             second: relation_slot,
@@ -270,6 +277,9 @@ impl Timetable {
                                     after,
                                 } => {
                                     if before == 0 && after >= per_week_second - 1 {
+                                        // offset at which to start replacing, so that empty spaces are at the start rather than the end
+                                        let offset = after + 1 - per_week_second;
+
                                         match (first, second) {
                                             (SlotData::Empty, _) => {
                                                 // don't place in the double block if the teacher is the same
@@ -285,15 +295,17 @@ impl Timetable {
                                                 }
 
                                                 for j in 0..per_week_second {
-                                                    let (_before, _after) =
-                                                        match class_slots.slots[i + j as usize] {
-                                                            Slot::Single(_) => unreachable!(),
-                                                            Slot::Double {
-                                                                before, after, ..
-                                                            } => (before, after),
-                                                        };
+                                                    let (_before, _after) = match class_slots.slots
+                                                        [i + j as usize + offset as usize]
+                                                    {
+                                                        Slot::Single(_) => unreachable!(),
+                                                        Slot::Double { before, after, .. } => {
+                                                            (before, after)
+                                                        }
+                                                    };
 
-                                                    class_slots.slots[i + j as usize] =
+                                                    class_slots.slots
+                                                        [i + j as usize + offset as usize] =
                                                         Slot::Double {
                                                             first: relation_slot,
                                                             second: second,
@@ -321,15 +333,17 @@ impl Timetable {
                                                 }
 
                                                 for j in 0..per_week_second {
-                                                    let (_before, _after) =
-                                                        match class_slots.slots[i + j as usize] {
-                                                            Slot::Single(_) => unreachable!(),
-                                                            Slot::Double {
-                                                                before, after, ..
-                                                            } => (before, after),
-                                                        };
+                                                    let (_before, _after) = match class_slots.slots
+                                                        [i + j as usize + offset as usize]
+                                                    {
+                                                        Slot::Single(_) => unreachable!(),
+                                                        Slot::Double { before, after, .. } => {
+                                                            (before, after)
+                                                        }
+                                                    };
 
-                                                    class_slots.slots[i + j as usize] =
+                                                    class_slots.slots
+                                                        [i + j as usize + offset as usize] =
                                                         Slot::Double {
                                                             first: first,
                                                             second: relation_slot,
@@ -380,8 +394,6 @@ impl Timetable {
     }
 
     pub fn start_algorithm(&mut self, running: Arc<AtomicBool>, out: &Sender) {
-        let room_kinds_count = util::room_kinds_count(&self.data.rooms);
-
         // SIMULATED ANNEALLING:
         {
             const ALPHA: f32 = 0.97;
@@ -399,8 +411,8 @@ impl Timetable {
                 for _ in 0..SA_MAX {
                     let new_s = s.generate_neighbor(out);
 
-                    let new_s_cost_hard = new_s.hard_points(&room_kinds_count);
-                    let s_cost_hard = s.hard_points(&room_kinds_count);
+                    let new_s_cost_hard = new_s.hard_points();
+                    let s_cost_hard = s.hard_points();
 
                     let new_s_cost_soft = new_s.soft_points();
                     let s_cost_soft = s.soft_points();
@@ -422,7 +434,7 @@ impl Timetable {
                         );
                         s = new_s;
 
-                        let best_s_cost_hard = best_s.hard_points(&room_kinds_count);
+                        let best_s_cost_hard = best_s.hard_points();
                         let best_s_cost_soft = best_s.soft_points();
                         let best_s_cost = best_s_cost_soft + best_s_cost_hard;
                         if new_s_cost < best_s_cost {
@@ -461,12 +473,16 @@ impl Timetable {
             self.table = best_s.table;
         }
 
+        self.detailed_cost();
+    }
+
+    pub fn detailed_cost(&self) {
         let teacher_table =
             util::class_table_to_teacher_table(&self.table, &self.data, self.max_periods_per_day);
 
         let cost1 = 2 * cost::hard_repeating_teachers(self);
         let cost2 = 2 * cost::hard_holes_in_class_timetable(self);
-        let cost3 = 2 * cost::hard_too_many_subjects_of_same_kind(self, &room_kinds_count);
+        let cost3 = 2 * cost::hard_too_many_subjects_of_same_kind(self);
         let cost4 = cost::soft_class_spread(self);
         let cost5 = cost::soft_teacher_class_spread(self, &teacher_table);
         let cost6 = cost::soft_holes_in_teacher_timetable(self, &teacher_table);
@@ -615,12 +631,12 @@ impl Timetable {
     }
 
     // Should be 0
-    pub fn hard_points(&self, room_kinds_count: &HashMap<String, u32>) -> i32 {
+    pub fn hard_points(&self) -> i32 {
         let mut points = 0;
 
         points += 2 * cost::hard_repeating_teachers(self);
         points += 2 * cost::hard_holes_in_class_timetable(self);
-        points += 2 * cost::hard_too_many_subjects_of_same_kind(self, room_kinds_count);
+        points += 2 * cost::hard_too_many_subjects_of_same_kind(self);
 
         points
     }
@@ -640,6 +656,7 @@ impl Timetable {
     }
 
     pub fn fill_rooms(&mut self) {
+        /*
         for period in 0..(self.max_periods_per_day * 5) {
             let mut used_rooms: Vec<usize> = vec![];
 
@@ -734,5 +751,6 @@ impl Timetable {
                 }
             }
         }
+        */
     }
 }

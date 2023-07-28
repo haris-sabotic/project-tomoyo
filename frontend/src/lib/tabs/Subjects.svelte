@@ -16,9 +16,19 @@
         rooms = value;
     });
 
+    function getRoomKinds(roomArray) {
+        let kinds = [];
+        roomArray.forEach(room => {
+            console.log(room);
+            room.kinds.split(' ').forEach(kind => kinds.push(kind))
+        });
+
+        return kinds
+    }
+
     // rooms unique by their kind, used for the select element
-    $: uniqueRooms = rooms.reduce(
-        (acc, cur) => [...acc.filter((room) => room.kind !== cur.kind), cur],
+    $: uniqueRoomKinds = getRoomKinds(rooms).reduce(
+        (acc, cur) => [...acc.filter((kind) => kind !== cur), cur],
         []
     );
 
@@ -75,9 +85,9 @@
     <input bind:value={subjectName} type="text" placeholder="Subject name" />
 
     <select bind:value={subjectKind}>
-        {#each uniqueRooms as room}
-            <option value={room.kind}>
-                {room.kind}
+        {#each uniqueRoomKinds as kind}
+            <option value={kind}>
+                {kind}
             </option>
         {/each}
     </select>
