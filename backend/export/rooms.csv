@@ -1,37 +1,32 @@
-name,kind
-sala,sala
-sala,sala
-34,regularna
-33,regularna
-32,regularna
-31,regularna
-30,francuski
-29,regularna
-28,informatika
-27,informatika
-26,regularna
-25,regularna
-24,regularna
-23,italijanski
-22,regularna
-21,regularna
-20,specijalna
-19,regularna
-18,regularna
-17,regularna
-16,regularna
-15,regularna
-14,regularna
-13,regularna
-12,regularna
-11,regularna
-10,regularna
-9,regularna
-8,regularna
-7,okrugla
-6,okrugla
-5,okrugla
-4,okrugla
-3,okrugla
-2,okrugla
-1,okrugla
+name,kinds
+M6,masinska laptop
+M5,masinska laptop
+M4,masinska laptop
+M3,masinska laptop
+M2,masinska laptop
+M1,masinska laptop
+Sala,sala
+Sala,sala
+23,computer laptop regular vjezbe
+22,regular
+21,regular
+20,regular
+19,regular
+18,regular
+17,regular
+16,regular
+15,regular
+14,computer laptop vjezbe
+13,regular
+12,regular
+11,regular
+10,computer laptop
+9,computer laptop
+8,computer laptop
+7,computer laptop
+6,regular
+5,regular
+4,regular
+3,regular
+2,computer laptop
+1,computer laptop

@@ -1,24 +1,89 @@
 name,kind
-Literarna i novinarska radionica,regularna
-Zanimljiva geografija,regularna
-Medijska pismenost,regularna
-Zdravi stilovi zivota,regularna
-Sport za sportiste,sala
-Gradjansko vaspitanje,regularna
-Vrednovanje prostora,regularna
-Muzicka radionica,regularna
-Fizicko vaspitanje,sala
-Muzicka kultura,regularna
-Likovna kultura,regularna
-Informatika sa tehnikom,informatika
-Geografija,regularna
-Istorija,regularna
-Biologija,regularna
-Hemija,regularna
-Fizika,regularna
-Njemacki,regularna
-Italijanski,italijanski
-Francuski,francuski
-Engleski,regularna
-Matematika,regularna
-CSBH,regularna
+Autoelektronika,regular
+Engleski jezik u elektronici,regular
+Projektovanje u elektronici i automatici,masinska
+Proizvodnja elektronskih uredjaja i sistema (T),regular
+Sistemi industrijske elektronike i automatike (T),masinska
+Elektronski komercijalni sistemi (T),regular
+Elektronski komercijalni uredjaji (T),regular
+Video tehnika,regular
+Engleski jezik u elektronskim komunikacijama,regular
+Projektovanje telekomunikacionih korisnickih sistema,computer
+Opticki komunikacioni sistemi (T),regular
+Bezicni komunikacioni sistemi,regular
+Telekomunikacioni korisnicki sistemi II (T),regular
+Komutacioni i data centri,regular
+Engleski jezik u racunarstvu,regular
+Projektovanje racunarskih mreza,laptop
+Zastita racunarskih sistema i mreza (P),laptop
+Zastita racunarskih sistema i mreza (T),regular
+Instaliranje i odrzavanje racunarskih mreza (T),regular
+Aplikativni softver (P),computer
+Aplikativni softver (T),regular
+Multimedijalni servisi,regular
+Poslovna kultura,regular
+Engleski jezik u informacionim tehnologijama,regular
+Upravljanje softverskim projektima (T),regular
+Napredno front-end programiranje (P),computer
+Napredno front-end programiranje (T),regular
+Razvoj mobilnih aplikacija II (P),computer
+Razvoj mobilnih aplikacija II (T),regular
+Razvoj veb aplikacija II (P),computer
+Razvoj veb aplikacija II (T),regular
+Savremeno odrastanje,regular
+Elektrotehnicki materijali,regular
+Osnove programiranja (T),regular
+Elektronske komunikacije,regular
+Osnove proceduralnog programiranja (P),computer
+Osnove proceduralnog programiranja (T),regular
+Izvodjenje telekomunikacionih instalacija (P),masinska
+Izvodjenje telekomunikacionih instalacija (T),regular
+Elektronske komunikacije II,regular
+Racunarska grafika i animacija,computer
+Fotografija (P),computer
+Fotografija (T),computer
+Analogna i digitalna elektronika (P),vjezbe
+Analogna i digitalna elektronika (T),regular
+Racunarski hardver (T),regular
+Osnove racunarskih mreza,regular
+Osnove elektrotehnike II,regular
+Osnove racunarskog hardvera (P),computer
+Osnove racunarskog hardvera (T),regular
+Upravljanje bazama podataka (P),computer
+Upravljanje bazama podataka (T),regular
+Veb i mobilni dizajn (P),computer
+Veb i mobilni dizajn (T),computer
+Objektno-orijentisano programiranje (P),computer
+Objektno-orijentisano programiranje (T),regular
+Uvod u veb programiranje (P),computer
+Uvod u veb programiranje (T),regular
+CSBH,regular
+Fizicko,sala
+Sociologija,regular
+Preduzetnistvo,regular
+Geografija,regular
+Hemija,regular
+Engleski,regular
+Informatika,computer
+Fizika,regular
+Matematika,regular
+Analogna elektronika (P),regular
+Analogna elektronika (T),regular
+Osnove programiranja (P),laptop
+Instaliranje i odrzavanje racunarskih mreza (P),laptop
+Racunarski hardver (P),laptop
+Elektronski komercijalni sistemi (P),masinska
+Elektronski komercijalni uredjaji (P),masinska
+Upravljanje softverskim projektima (P),computer
+Telekomunikacioni korisnicki sistemi II (P),regular
+Bezicni komutacioni centri (T),regular
+Bezicni komutacioni centri (P),regular
+Proizvodnja elektronskih uredjaja i sistema (P),masinska
+Komutacioni i data sistemi (T),regular
+Komutacioni i data sistemi (P),regular
+Opticki komunikacioni sistemi (P),regular
+Sistemi industrijske elektronike i automatike (P),masinska
+Uvod u instalacije elektronskih uredjaja i sistema (T),regular
+Uvod u instalacije elektronskih uredjaja i sistema (P),masinska
+Uvod u izgradnju elektronske komunikacione infrastrukture (T),regular
+Uvod u izgradnju elektronske komunikacione infrastrukture (P),masinska

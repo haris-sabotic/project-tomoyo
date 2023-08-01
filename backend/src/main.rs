@@ -293,7 +293,11 @@ fn handle_export(timetable: &mut Timetable, parsed_msg: &Value) {
                 "rooms" => {
                     update_rooms(&mut timetable.data.rooms, &parsed_msg["data"]);
                     for row in timetable.data.rooms.iter() {
-                        wrtr.serialize(row).unwrap();
+                        let room_record = RoomRecord {
+                            name: row.name.clone(),
+                            kinds: row.kinds.join(" "),
+                        };
+                        wrtr.serialize(room_record).unwrap();
                     }
                 }
                 "subjects" => {

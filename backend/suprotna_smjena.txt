@@ -1,0 +1,238 @@
+Matematika:
+Stanisic Milanka: S3D, E3A, E1A, S1I (3)
+Knezevic Svetlana: S3A, S3B, S3H, S1C (3)
+Scepanovic Suzana: S3E (3), R3B (2)
+Becirovic Emsada: S1A, S1F, R1A (3)
+Sukovic Biljana: S3F, S3G (3)
+Bulatovic Dijana: S1B, S1D, S1E, S1G, R1B, S3C (3)
+Scekic Jelena: R3A, S1H (2)
+
+Fizika
+Mandic Olivera: S1A, S1C, S1D, S1E, S1H, S1I (2)
+Ivanovic Olivera: S1B, S1F, S1G, E1A (2)
+Fizika 1: R1A, R1B (2)
+
+Informatika:
+Papic Spasoje: S1A, S1B, S1C, S1E, S1F, E1A (2/0)
+Raicevic Nikola: S1A, S1C, S1D, S1E, S1F, S1G, S1H, R1B, E1A (2/0)
+Zezelj Marija: S1B, S1D, S1G, S1I, R1A, R1B (2/0)
+Informatika 1: R1A (2/0)
+
+Engleski jezik (i engleski jezik struke):
+Sanja Radusinovic: E3A, S3G, S3H (3)
+Jelena Bogicevic: S1A, S1B, S1C (3)
+Ana Delic: S1C, S1D, S1I, E1A, S3B, S3D (3)
+Elida Rastoder: S1E, S1F, S1G, S3A, S3E, S3D (3)
+Ana Markovic: R1A (2)
+Engleski 1: R3A, R3B (2)
+Engleski 2: S1H (3)
+
+Hemija:
+Olga Nisavic: S1A, S1B, S1C, S1D, S1E, S1F, S1G, S1H, S1I (2)
+Hemija 1: E1A, R1A, R1B (2)
+
+Geografija:
+Dragan Djakovic: S1A, S1B, S1C, S1E, S1F, S1G, S1H, S1I (2)
+Geografija 1: S1D (2)
+
+Preduzetnistvo
+Aleksandra Budrak: S3A, S3B, S3C, S3D, S3E, S3G, S3H, R3A, R3B (2)
+Preduzetnistvo 1: S3F, E3A (2)
+
+Sociologija:
+Rada Mugosa: S3A, S3B, S3C, S3D, S3E, S3F, S3G, S3H, E3A (2)
+
+Socijalne mreze i globalizacija:
+Sociologija 2: S3C, S3E, S3F, E3A (2)
+
+Fizicko:
+Cimbaljevic Drago: S1A, S1B, S1C, S3C, S3D, S3E (2)
+Djeric Bogdan: S1D, S1E, S1F, S1G, E1A, S3A, S3B, S3G, S3H (2)
+Fizicko 1: E3A, R1A, R1B, R3A, R3B (2)
+Fizicko 2: S1H, S1I, S3F (2)
+
+CSBH:
+Zana Krgusic: S3B, S3E, S3H, S1B
+Dejan Maras: S1A, S1E, E1A
+Nevenka Roganovic: S3F, S3G, E3A, S3D
+Marija Babovic: S3A, S3C, R3A
+Sandra Bulajic: R3B, S1C, S1D, S1F, S1H, S1 ???????????????????????????????????????????????????????????????????????????????
+Natasa Stojanovic: R1A, R1B, ??????????????????????????????????????????????????????????????????????????????????????????????
+
+--------------------------------
+
+Sandic Dragan:
+Izv. el. inst. i osv. u gradj. obj.: R3A (18)
+
+Samardzic Rada:
+Izvori el. ene.: S3H (2)
+Uvod u energetiku: E1A (2+0+2)
+
+Vratnica Mladen:
+El. inst.: E1A (3+0+4)
+Odrz. el. inst. i uredjaja u domacinstvu: R3A (1+0+4)
+
+Pekovic Milijana:
+Uvod u energetiku: R1A (2)
+Osnove elektrotehnike I: R1B (3+2+2)
+
+Zekovic Jelena:
+Osnove elektrotehnike I: S1E (3+2+2), S1I (3+1+1)
+
+Vojinovic Nikolija:
+Osnove elektrotehnike I: S1H (3+1+1), E1A (3+2+2)
+
+Braletic Marina:
+Osnove elektrotehnike I: S1F (3+2+2)
+Odrz. el. inst. i uredjaja u domacinstvu: E3A (1+0+4)
+El.mot. pogoni: E3A (2+0+4)
+
+Dasic Nada:
+Osnove elektrotehnike I: S1G (3+2+2)
+Softv. alati za proj. u el.tehn.: E3A (4)
+
+Calasan Vesna:
+Vis.napon. razv. postroj.: E3A (2+0+2)
+Pren. el. ene.: E3A (2+0+2)
+
+Kocovic Mitra:
+Osnove elektrotehnike I: R1A (3+2+2)
+
+Energetika 1:
+Elektricne instalacije: R1A (3+0+4)
+
+Energetika 2:
+Pripr. el.inst. radovi: R1A (0+0+4)
+
+---
+
+Stanisic Radomir:
+Uvod u el. kom.: S3D (2)
+
+Matovic Dubravka:
+Operativni sistemi: S1G (2+0+2)
+Osnove racunarstva: S1F, S1E (1+2)
+Audio tehnika: S3G (2)
+
+Coguric Radmila:
+Uvod u programiranje: S1C (2+0+6)
+Veb i mob. kom. servisi: S3A (1+0+2)
+
+Tasic Gordana:
+Osnove racunarstva: S1A (1+2)
+Operativni sistemi: S1B, S1C (2+0+2)
+Softv. alati za proj. u el.tehn.: S3H (4)
+
+Milentijevic Dragica:
+Relacione baze podataka: S3F (1+0+2)
+
+Tadic Slobodan:
+Uvod u inst. rac. sistema i mreza: S1G (1.5+0+3)
+Uvod u izgr. el. kom. infrastrukture: R1B (1.5+3)
+
+Nikolic Natalija:
+Administritanje operativnih sistema: S3D, S3E (1+0+6)
+
+Ana Vujovic:
+Softv. alati za proj. u el.tehn.: S3D (4)
+
+Vemic Nada:
+Osnove racunarstva: S1I (1+1), S1G, S1D (1+2)
+
+Radulovic Zoran:
+Administriranje rac. mreza: S3D, S3E (2+0+4)
+
+Lucic Mileva:
+Osnove graf. dizajna: S1A (6)
+
+Raskovic Violeta:
+Osnove racunarstva: S1B, S1C (1+2)
+Operativni sistemi: S1A (2+0+2)
+Softv. alati za proj. u el.tehn.: S3E
+
+Kojovic Nikola:
+Odrz. rac. hardv.: S3D, S3E (1+0+4)
+Rac. mreze: S3G (1+0+1)
+
+Bozovic Radovan:
+Osnove elektronike: S1I (1.5+0+1.5)
+Relacione baze podataka: S3D, S3E (1+0+2)
+El. kom I: S1H (3)
+
+Obradovic Aleksandar:
+Telekom. korisnicki sistemi: R3B (1+0+4)
+Telekom. korisnicki sistemi I: S3G (2+0+2)
+El. sigurnosni sistemi: S3H (1+0+4)
+
+Maja Supic:
+Softv. alati za proj. u el.tehn.: S3F (4), S3G (2)
+Prenosno-pristupne mreze: S3G (2+0+2), R3B (1+0+4)
+El. kom. I: R1B (3)
+
+Stevovic Mirjana:
+Produkcija multimedijalnog sadrzaja: S3B (6)
+Digitalna elektronika: S3H (2+2+2)
+
+Lidija Vuletic:
+Operativni sistemi: S1E, S1F (2+0+2)
+Racunarske mreze: R3B (1+0+2)
+
+Kovac Vladimir:
+Razvoj veb apl. I: S3B (2+0+6)
+
+Brajovic Olga:
+Osnove graf. dizajna: S1B, S1C (6)
+Produkcija multimedijalnog sadrzaja: S3C (6)
+
+Babic Jelena:
+Uvod u programiranje: S1D (2+0+6)
+Veb i mob. kom. servisi: S3C (1+0+2)
+
+Marina Radonjic:
+Uvod u programiranje: S1A (2+0+6)
+Razvoj veb apl. I: S3A (2+0+6)
+
+Sladjana Saric:
+Veb i mob. kom. servisi: S3B (1+0+2)
+
+Boris Vucerakovic:
+Uvod u programiranje: S1B (2+0+6)
+Operativni sistemi: S1D (2+0+2)
+
+Veselin Picuric:
+Admin. rac. mreza: S3F (2+0+4)
+Telekom. mreze: S3G (2.5+0+0.5)
+Osnove racunarstva: S1H (1+1)
+
+Alen Adilovic:
+Admin. operativnih sistema: S3F (1+0+6)
+
+Snezana Krunic:
+Produkcija multimedijalnog sadrzaja: S3A (6)
+Razvoj veb apl. I: S3C (2+0+6)
+
+Lopicic Predrag:
+Ind. el. i autom.: S3H (2+0+2)
+Odrz. rac. hardv.: S3F (1+0+4)
+
+Elektronika 1:
+3D grafika: S3A, S3B (4)
+
+Elektronika 4:
+Razvoj mob. apl. I: S3A, S3B (2+0+6)
+
+Elektronika 6:
+Uvod u inst. rac. sistema i mreza: S1E, S1F (1.5+0+3)
+
+Elektronika 7:
+Inst. opreme el. kom. sistema: R3B (13)
+Pripr. i pomoc. radovi u izgr. el. kom. infrastr.: R1B (5)
+
+Elektronika 8:
+Program. mikrokontr.: S3H (1+0+4)
+Uvod u inst. el. uredj. i sistema: S1I (1.5+0+1.5)
+Uvod u izgr. el. kom. infrastr.: S1H (1.5+0+1.5)
+
+Elektronika 9:
+Razvoj mob. apl. I: S3C (2+0+6)
+Osnove graf. dizajna: S1D (6)
