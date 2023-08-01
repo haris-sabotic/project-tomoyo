@@ -44,7 +44,7 @@
         </div>
     </td>
 {:else}
-    <td class={htmlClass()}></td>
+    <td class="{htmlClass()} empty"></td>
 {/if}
 
 <style>
@@ -52,6 +52,10 @@
         border: 1px solid black;
         margin: 0;
         padding: 10px;
+    }
+
+    .empty {
+        background-color: lightsteelblue;
     }
 
     .content {

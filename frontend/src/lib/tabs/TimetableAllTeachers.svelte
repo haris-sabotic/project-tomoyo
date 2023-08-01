@@ -81,6 +81,33 @@
                         },
                     };
                 }
+                
+                // second
+                if (slot["Double"]["second"]["PartiallyFilled"]) {
+                    let teacher =
+                        slot["Double"]["second"]["PartiallyFilled"].teacher;
+                    let subject =
+                        slot["Double"]["second"]["PartiallyFilled"].subject;
+
+                    teachers_timetable[teacher].slots[i] = {
+                        PartiallyFilled: {
+                            subject: subject,
+                            class: class_index,
+                        },
+                    };
+                } else if (slot["Double"]["second"]["Filled"]) {
+                    let teacher = slot["Double"]["second"]["Filled"].teacher;
+                    let subject = slot["Double"]["second"]["Filled"].subject;
+                    let room = slot["Double"]["second"]["Filled"].room;
+
+                    teachers_timetable[teacher].slots[i] = {
+                        Filled: {
+                            subject: subject,
+                            class: class_index,
+                            room: room,
+                        },
+                    };
+                }
             }
         }
     });

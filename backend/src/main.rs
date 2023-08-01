@@ -156,9 +156,9 @@ impl Handler for Server {
             Some("play") => {
                 self.time = Instant::now();
 
-                let data = parsed_msg["data"].as_array().unwrap();
+                let table = parsed_msg["data"]["table"].as_array().unwrap();
                 for i in 0..timetable.table.len() {
-                    timetable.table[i] = serde_json::from_value(data[i].clone()).unwrap();
+                    timetable.table[i] = serde_json::from_value(table[i].clone()).unwrap();
                 }
 
                 self.running_algorithm
@@ -167,11 +167,18 @@ impl Handler for Server {
                 let running_algorithm_local_ref = self.running_algorithm.clone(); // cloned reference to timetable
                 let out_local_ref = self.out.clone(); // cloned reference to out channel
 
+                let alpha = parsed_msg["data"]["alpha"].as_f64().unwrap();
+                let t0 = parsed_msg["data"]["t0"].as_f64().unwrap();
+                let sa_max = parsed_msg["data"]["sa_max"].as_i64().unwrap();
+
                 thread::spawn(move || {
-                    timetable_local_ref
-                        .lock()
-                        .unwrap()
-                        .start_algorithm(running_algorithm_local_ref, &out_local_ref);
+                    timetable_local_ref.lock().unwrap().start_algorithm(
+                        running_algorithm_local_ref,
+                        &out_local_ref,
+                        alpha,
+                        t0,
+                        sa_max,
+                    );
                 });
             }
 
@@ -188,6 +195,11 @@ impl Handler for Server {
             }
 
             Some("detailed_cost") => {
+                let data = parsed_msg["data"].as_array().unwrap();
+                for i in 0..timetable.table.len() {
+                    timetable.table[i] = serde_json::from_value(data[i].clone()).unwrap();
+                }
+
                 timetable.detailed_cost();
             }
 

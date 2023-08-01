@@ -1,5 +1,4 @@
 use std::{
-    collections::HashMap,
     println,
     sync::{
         atomic::{AtomicBool, Ordering},
@@ -139,15 +138,11 @@ impl Timetable {
                                 _ => {}
                             }
                         }
-
-                        //println!("    Placed");
                     }
 
                     // double relation
                     Some(per_week_second) => {
                         let per_week_first = relation.per_week_first;
-
-                        //print!("    Placed");
 
                         let mut first_group_placed = false;
 
@@ -177,6 +172,16 @@ impl Timetable {
                                                     _ => {}
                                                 }
 
+                                                // continue if it isn't fully empty
+                                                match class_slots.slots[i + after as usize] {
+                                                    Slot::Double {
+                                                        first: SlotData::Empty,
+                                                        ..
+                                                    } => {}
+
+                                                    _ => continue,
+                                                }
+
                                                 for j in 0..per_week_first {
                                                     let (_before, _after) = match class_slots.slots
                                                         [i + j as usize + offset as usize]
@@ -215,6 +220,16 @@ impl Timetable {
                                                     _ => {}
                                                 }
 
+                                                // continue if it isn't fully empty
+                                                match class_slots.slots[i + after as usize] {
+                                                    Slot::Double {
+                                                        second: SlotData::Empty,
+                                                        ..
+                                                    } => {}
+
+                                                    _ => continue,
+                                                }
+
                                                 for j in 0..per_week_first {
                                                     let (_before, _after) = match class_slots.slots
                                                         [i + j as usize + offset as usize]
@@ -245,8 +260,14 @@ impl Timetable {
                                     }
                                 }
 
-                                Slot::Single(SlotData::Empty) => {
-                                    if !first_group_placed {
+                                _ => {}
+                            }
+                        }
+
+                        if !first_group_placed {
+                            for i in 0..class_slots.slots.len() {
+                                match class_slots.slots[i] {
+                                    Slot::Single(SlotData::Empty) => {
                                         for j in 0..per_week_first {
                                             class_slots.slots[i + j as usize] = Slot::Double {
                                                 first: relation_slot,
@@ -258,13 +279,11 @@ impl Timetable {
 
                                         break;
                                     }
-                                }
 
-                                _ => {}
+                                    _ => {}
+                                }
                             }
                         }
-
-                        //print!(" first");
 
                         let mut second_group_placed = false;
 
@@ -294,6 +313,16 @@ impl Timetable {
                                                     _ => {}
                                                 }
 
+                                                // continue if it isn't fully empty
+                                                match class_slots.slots[i + after as usize] {
+                                                    Slot::Double {
+                                                        first: SlotData::Empty,
+                                                        ..
+                                                    } => {}
+
+                                                    _ => continue,
+                                                }
+
                                                 for j in 0..per_week_second {
                                                     let (_before, _after) = match class_slots.slots
                                                         [i + j as usize + offset as usize]
@@ -332,6 +361,16 @@ impl Timetable {
                                                     _ => {}
                                                 }
 
+                                                // continue if it isn't fully empty
+                                                match class_slots.slots[i + after as usize] {
+                                                    Slot::Double {
+                                                        second: SlotData::Empty,
+                                                        ..
+                                                    } => {}
+
+                                                    _ => continue,
+                                                }
+
                                                 for j in 0..per_week_second {
                                                     let (_before, _after) = match class_slots.slots
                                                         [i + j as usize + offset as usize]
@@ -362,8 +401,14 @@ impl Timetable {
                                     }
                                 }
 
-                                Slot::Single(SlotData::Empty) => {
-                                    if !second_group_placed {
+                                _ => {}
+                            }
+                        }
+
+                        if !second_group_placed {
+                            for i in 0..class_slots.slots.len() {
+                                match class_slots.slots[i] {
+                                    Slot::Single(SlotData::Empty) => {
                                         for j in 0..per_week_second {
                                             class_slots.slots[i + j as usize] = Slot::Double {
                                                 first: relation_slot,
@@ -375,13 +420,21 @@ impl Timetable {
 
                                         break;
                                     }
-                                }
 
-                                _ => {}
+                                    _ => {}
+                                }
                             }
                         }
 
-                        //println!(" and second");
+                        /*
+                        if self.data.classes[relation.class].name == "S4E"
+                            && self.data.subjects[relation.subject].name
+                                == "Aplikativni softver (P)"
+                        {
+                            self.table = table;
+                            return;
+                        }
+                        */
                     }
                 }
             }
@@ -393,22 +446,25 @@ impl Timetable {
         self.table = table;
     }
 
-    pub fn start_algorithm(&mut self, running: Arc<AtomicBool>, out: &Sender) {
+    pub fn start_algorithm(
+        &mut self,
+        running: Arc<AtomicBool>,
+        out: &Sender,
+        alpha: f64,
+        t0: f64,
+        sa_max: i64,
+    ) {
         // SIMULATED ANNEALLING:
         {
-            const ALPHA: f32 = 0.97;
-            const T0: f32 = 1.0;
-            const SA_MAX: i32 = 10000;
-
             let mut s = self.clone();
             let mut best_s = self.clone();
 
-            let mut t = T0;
+            let mut t = t0;
 
             while running.load(Ordering::Relaxed) {
                 let mut exit = false;
 
-                for _ in 0..SA_MAX {
+                for _ in 0..sa_max {
                     let new_s = s.generate_neighbor(out);
 
                     let new_s_cost_hard = new_s.hard_points();
@@ -467,7 +523,7 @@ impl Timetable {
                     break;
                 }
 
-                t = t * ALPHA;
+                t = t * alpha;
             }
 
             self.table = best_s.table;
@@ -480,33 +536,31 @@ impl Timetable {
         let teacher_table =
             util::class_table_to_teacher_table(&self.table, &self.data, self.max_periods_per_day);
 
-        let cost1 = 2 * cost::hard_repeating_teachers(self);
-        let cost2 = 2 * cost::hard_holes_in_class_timetable(self);
-        let cost3 = 2 * cost::hard_too_many_subjects_of_same_kind(self);
-        let cost4 = cost::soft_class_spread(self);
-        let cost5 = cost::soft_teacher_class_spread(self, &teacher_table);
-        let cost6 = cost::soft_holes_in_teacher_timetable(self, &teacher_table);
+        let hcost1 = 2 * cost::hard_repeating_teachers(self);
+        let hcost2 = 2 * cost::hard_holes_in_class_timetable(self);
+        let hcost3 = 2 * cost::hard_too_many_subjects_of_same_kind(self);
+        let hcost4 = 2 * cost::hard_block_classes(self);
+        let hcost5 = 2 * cost::hard_specific_subject_days(self);
+        let hcost6 = 2 * cost::hard_subject_per_day_limits(self);
+        let hcost7 = 2 * cost::hard_subject_holes(self);
+        let scost1 = cost::soft_class_spread(self);
+        let scost2 = cost::soft_teacher_class_spread(self, &teacher_table);
+        let scost3 = cost::soft_holes_in_teacher_timetable(self, &teacher_table);
+        let scost4 = cost::soft_preferred_subject_times(self);
 
         println!("DETAILED COST");
-        println!(" (h) Repeating teachers: {}", cost1);
-        println!(" (h) Holes: {}", cost2);
-        println!(" (h) Too many subjects of same kind: {}", cost3);
-        println!(" (s) Class spread: {}", cost4);
-        println!(" (s) Teacher class spread: {}", cost5);
-        println!(" (s) Teacher holes: {}", cost6);
+        println!(" (h) Repeating teachers: {}", hcost1);
+        println!(" (h) Holes: {}", hcost2);
+        println!(" (h) Too many subjects of same kind: {}", hcost3);
+        println!(" (h) Block classes: {}", hcost4);
+        println!(" (h) Specific subject days: {}", hcost5);
+        println!(" (h) Subject per day limits: {}", hcost6);
+        println!(" (h) Subject holes: {}", hcost7);
+        println!(" (s) Class spread: {}", scost1);
+        println!(" (s) Teacher class spread: {}", scost2);
+        println!(" (s) Teacher holes: {}", scost3);
+        println!(" (s) Soft preferred subject times: {}", scost4);
     }
-
-    //
-    //
-    //
-    //
-    //
-    // TODO: sticky slots and rooms with multiple tags
-    //
-    //
-    //
-    //
-    //
 
     pub fn generate_neighbor(&self, _out: &Sender) -> Self {
         let mut rng = thread_rng();
@@ -637,6 +691,10 @@ impl Timetable {
         points += 2 * cost::hard_repeating_teachers(self);
         points += 2 * cost::hard_holes_in_class_timetable(self);
         points += 2 * cost::hard_too_many_subjects_of_same_kind(self);
+        points += 2 * cost::hard_block_classes(self);
+        points += 2 * cost::hard_specific_subject_days(self);
+        points += 2 * cost::hard_subject_per_day_limits(self);
+        points += 2 * cost::hard_subject_holes(self);
 
         points
     }
@@ -651,6 +709,7 @@ impl Timetable {
         points += cost::soft_class_spread(self);
         points += cost::soft_teacher_class_spread(self, &teacher_table);
         points += cost::soft_holes_in_teacher_timetable(self, &teacher_table);
+        points += cost::soft_preferred_subject_times(self);
 
         points
     }

@@ -265,6 +265,184 @@ pub fn hard_too_many_subjects_of_same_kind(timetable: &Timetable) -> i32 {
     points
 }
 
+pub fn hard_block_classes(timetable: &Timetable) -> i32 {
+    let mut points: i32 = 0;
+
+    let subjects = vec![67, 66, 64, 58];
+
+    for class_slots in timetable.table.iter() {
+        for subject in subjects.iter() {
+            let mut block_found = false;
+            let mut subject_exists = false;
+
+            for day in 0..5 {
+                if block_found {
+                    break;
+                }
+
+                for period in 0..timetable.max_periods_per_day {
+                    let index = day * timetable.max_periods_per_day + period;
+
+                    match class_slots.slots[index as usize] {
+                        Slot::Single(SlotData::PartiallyFilled {
+                            subject: subject_out,
+                            ..
+                        }) => {
+                            if subject_out == *subject {
+                                subject_exists = true;
+
+                                if period < timetable.max_periods_per_day - 1 {
+                                    match class_slots.slots[index as usize + 1] {
+                                        Slot::Single(SlotData::PartiallyFilled {
+                                            subject: subject_in,
+                                            ..
+                                        }) => {
+                                            if subject_in == *subject {
+                                                block_found = true;
+                                                break;
+                                            }
+                                        }
+
+                                        _ => {}
+                                    }
+                                }
+                            }
+                        }
+
+                        _ => {}
+                    }
+                }
+            }
+
+            if subject_exists && !block_found {
+                points += 1;
+            }
+        }
+    }
+
+    points
+}
+
+pub fn hard_specific_subject_days(timetable: &Timetable) -> i32 {
+    let mut points = 0;
+
+    let subjects = vec![67, 66, 65, 64, 63, 62, 61, 60, 59, 58];
+    let classes = vec![7, 6, 5, 15, 14, 13];
+
+    for class in classes.iter() {
+        let mut days_without_subjects = 0;
+
+        for day in 0..5 {
+            days_without_subjects += 1;
+
+            for period in 0..timetable.max_periods_per_day {
+                let index = day * timetable.max_periods_per_day + period;
+
+                match timetable.table[*class as usize].slots[index as usize] {
+                    Slot::Single(s) => match s {
+                        SlotData::PartiallyFilled { subject, .. } => {
+                            if subjects.contains(&subject) {
+                                days_without_subjects -= 1;
+                                break;
+                            }
+                        }
+
+                        _ => {}
+                    },
+
+                    _ => {}
+                }
+            }
+        }
+
+        if days_without_subjects == 0 {
+            points += 1;
+        }
+    }
+
+    points
+}
+
+pub fn hard_subject_per_day_limits(timetable: &Timetable) -> i32 {
+    let mut points = 0;
+
+    let subjects2 = vec![67, 66, 64, 58];
+    let subjects1 = vec![59];
+
+    for class_slots in timetable.table.iter() {
+        for day in 0..5 {
+            let mut subject_counts: HashMap<usize, i32> = HashMap::new();
+
+            for period in 0..timetable.max_periods_per_day {
+                let index = day * timetable.max_periods_per_day + period;
+
+                match class_slots.slots[index as usize] {
+                    Slot::Single(SlotData::PartiallyFilled { subject, .. }) => {
+                        subject_counts
+                            .entry(subject)
+                            .and_modify(|c| *c += 1)
+                            .or_insert(1);
+                    }
+
+                    _ => {}
+                }
+            }
+
+            for subject in subject_counts.keys() {
+                if subjects1.contains(subject) {
+                    if subject_counts[subject] > 1 {
+                        points += 1;
+                    }
+                }
+
+                if subjects2.contains(subject) {
+                    if subject_counts[subject] > 2 {
+                        points += 1;
+                    }
+                }
+            }
+        }
+    }
+
+    points
+}
+
+pub fn hard_subject_holes(timetable: &Timetable) -> i32 {
+    let mut points = 0;
+
+    for class_slots in timetable.table.iter() {
+        for day in 0..5 {
+            let mut last_subject: i32 = -1;
+            let mut seen_subjects: Vec<usize> = vec![];
+
+            for period in 0..timetable.max_periods_per_day {
+                let index = day * timetable.max_periods_per_day + period;
+
+                match class_slots.slots[index as usize] {
+                    Slot::Single(s) => match s {
+                        SlotData::PartiallyFilled { subject, .. } => {
+                            if seen_subjects.contains(&subject) {
+                                if subject != last_subject as usize {
+                                    points += 1;
+                                }
+                            }
+
+                            seen_subjects.push(subject);
+                            last_subject = subject as i32;
+                        }
+
+                        _ => {}
+                    },
+
+                    Slot::Double { .. } => {}
+                }
+            }
+        }
+    }
+
+    points
+}
+
 /* ==================== */
 /*   SOFT CONSTRAINTS   */
 /* ==================== */
@@ -338,12 +516,20 @@ pub fn soft_class_spread(timetable: &Timetable) -> i32 {
                 }
             }
 
-            if day_class_count_first_group < ideal_class_spread {
-                points += 1;
-            }
+            if day_class_count_first_group == day_class_count_second_group {
+                if day_class_count_first_group < ideal_class_spread
+                    || day_class_count_second_group < ideal_class_spread
+                {
+                    points += 1;
+                }
+            } else {
+                if day_class_count_first_group < ideal_class_spread {
+                    points += 1;
+                }
 
-            if day_class_count_second_group < ideal_class_spread {
-                points += 1;
+                if day_class_count_second_group < ideal_class_spread {
+                    points += 1;
+                }
             }
         }
     }
@@ -371,7 +557,7 @@ pub fn soft_teacher_class_spread(timetable: &Timetable, teacher_table: &Vec<Teac
         }
 
         // ideal number of classes per day
-        let ideal_spread = (count as f32 / 5.0).ceil() as i32;
+        // let ideal_spread = (count as f32 / 5.0).ceil() as i32;
 
         for day in 0..5 {
             // calculate number of classes during this day
@@ -452,8 +638,56 @@ pub fn soft_holes_in_teacher_timetable(
                 }
             }
 
-            if holes >= 2 {
+            if holes >= 1 {
                 points += 1;
+            }
+        }
+    }
+
+    points
+}
+
+pub fn soft_preferred_subject_times(timetable: &Timetable) -> i32 {
+    let mut points = 0;
+
+    for class_slots in timetable.table.iter() {
+        for day in 0..5 {
+            // math shouldn't be in the second half of a day
+            let start = (timetable.max_periods_per_day as f32 / 2 as f32).ceil() as u32 - 1;
+            for period in start..timetable.max_periods_per_day {
+                let index = day * timetable.max_periods_per_day + period;
+
+                match class_slots.slots[index as usize] {
+                    Slot::Single(s) => match s {
+                        SlotData::PartiallyFilled { subject, .. } => {
+                            if subject == 67 {
+                                points += 1;
+                            }
+                        }
+
+                        _ => {}
+                    },
+
+                    _ => {}
+                }
+            }
+
+            // P.E. shouldn't be at the end of a day
+            let period = timetable.max_periods_per_day as usize - 1;
+            match class_slots.slots
+                [day as usize * timetable.max_periods_per_day as usize + period as usize]
+            {
+                Slot::Single(s) => match s {
+                    SlotData::PartiallyFilled { subject, .. } => {
+                        if subject == 59 {
+                            points += 1;
+                        }
+                    }
+
+                    _ => {}
+                },
+
+                _ => {}
             }
         }
     }

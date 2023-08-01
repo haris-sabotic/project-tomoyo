@@ -1,4 +1,7 @@
 teacher,subject,class,per_week_first,per_week_second
+28,52,13,3,
+28,52,14,3,
+28,52,15,3,
 43,47,10,2,2
 43,47,10,3,
 44,47,11,2,2
@@ -92,7 +95,6 @@ teacher,subject,class,per_week_first,per_week_second
 26,45,11,2,
 27,70,3,2,2
 27,33,3,1,
-28,52,4,2,2
 29,15,4,3,3
 30,41,5,2,2
 30,41,6,2,2
@@ -108,7 +110,7 @@ teacher,subject,class,per_week_first,per_week_second
 34,51,14,1,
 35,48,15,2,0
 35,49,15,1,
-36,46,13,2,
+36,46,12,2,
 36,54,13,2,2
 36,55,13,2,
 37,34,8,3,

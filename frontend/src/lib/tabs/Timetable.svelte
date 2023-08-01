@@ -38,6 +38,10 @@
         classes = value;
     });
 
+    let alpha = 0.97;
+    let t0 = 1.0;
+    let sa_max = 10000;
+
     socket.addEventListener("message", (raw) => {
         let message = JSON.parse(raw.data);
 
@@ -61,7 +65,12 @@
             JSON.stringify({
                 kind: "play",
                 tab: "timetable",
-                data: timetable.table,
+                data: {
+                    table: timetable.table,
+                    alpha: alpha,
+                    t0: t0,
+                    sa_max: sa_max,
+                },
             })
         );
     }
@@ -104,13 +113,13 @@
             })
         );
     }
-    
+
     function handleDetailedCost() {
         socket.send(
             JSON.stringify({
                 kind: "detailed_cost",
                 tab: "timetable",
-                data: null,
+                data: timetable.table,
             })
         );
     }
@@ -130,33 +139,68 @@
 </select>
 <button on:click={handleInitialTimetable}>Initial timetable</button>
 {#if timetable.table}
-<div class="controls">
-    <div class="buttons">
-        <div class="play-pause">
-            <button on:click={handlePlay}>Play</button>
-            <button on:click={handlePause}>Pause</button>
+    <div class="controls">
+        <div class="buttons">
+            <div class="play-pause">
+                <button on:click={handlePlay}>Play</button>
+                <button on:click={handlePause}>Pause</button>
+            </div>
+
+            <button on:click={handleFillRooms}>Fill rooms</button>
+            <button on:click={handleDetailedCost}>Detailed cost</button>
+
+            <div class="import-export">
+                <button on:click={handleImport}>Import</button>
+                <button on:click={handleExport}>Export</button>
+            </div>
         </div>
 
-        <button on:click={handleFillRooms}>Fill rooms</button>
-        <button on:click={handleDetailedCost}>Detailed cost</button>
-
-        <div class="import-export">
-            <button on:click={handleImport}>Import</button>
-            <button on:click={handleExport}>Export</button>
+        <div class="inputs">
+            <div>
+                <label for="alpha">Alpha</label>
+                <label for="t0">T0</label>
+                <label for="sa_max">SA max</label>
+                <input
+                    type="number"
+                    name="alpha"
+                    id="alpha"
+                    bind:value={alpha}
+                    step="0.01"
+                />
+                <input
+                    type="number"
+                    name="t0"
+                    id="t0"
+                    bind:value={t0}
+                    step="0.01"
+                />
+                <input
+                    type="number"
+                    name="sa_max"
+                    id="sa_max"
+                    bind:value={sa_max}
+                    step="1"
+                />
+            </div>
         </div>
     </div>
-
-    <div class="inputs">
-        <input type="text" name="alpha">
-        <input type="text" name="t0">
-        <input type="text" name="sa_max">
-    </div>
-</div>
 
     {#if selectedView == "all-classes"}
-        <TimetableAllClasses {timetable} {classes} {subjects} {teachers} {rooms} />
+        <TimetableAllClasses
+            {timetable}
+            {classes}
+            {subjects}
+            {teachers}
+            {rooms}
+        />
     {:else if selectedView == "all-teachers"}
-        <TimetableAllTeachers {timetable} {classes} {subjects} {teachers} {rooms} />
+        <TimetableAllTeachers
+            {timetable}
+            {classes}
+            {subjects}
+            {teachers}
+            {rooms}
+        />
     {:else}
         <TimetableClass
             class_index={selectedView}
@@ -172,7 +216,8 @@
 
 <style>
     .buttons {
-        margin: 50px 0;
+        margin-top: 50px;
+        margin-bottom: 20px;
         display: flex;
         gap: 100px;
         flex-direction: row;
@@ -187,5 +232,20 @@
         display: flex;
         gap: 20px;
         justify-content: center;
+    }
+
+    .inputs {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+
+        margin-bottom: 20px;
+    }
+    .inputs > div {
+        width: 1000px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        column-gap: 10px;
     }
 </style>

@@ -42,6 +42,8 @@
         }
     });
 
+    let editing = null;
+
     function convertRelationToIndices(relation) {
         return {
             teacher: teachers.findIndex(
@@ -97,27 +99,38 @@
         let teacher = relationTeacher.trim();
         let subject = relationSubject.trim();
         let classes = relationClasses.trim();
-        let perWeek = relationPerWeek;
+        let perWeek = relationPerWeek.toString();
 
         if (teacher.length > 0 && subject.length > 0 && classes.length > 0) {
             let data = [];
             classes.split(",").forEach((c) => {
                 let perWeekFirst = perWeek;
                 let perWeekSecond = null;
+                console.log(perWeek);
                 if (perWeek.split("/").length == 2) {
                     perWeekFirst = perWeek.split("/")[0];
                     perWeekSecond = perWeek.split("/")[1];
                 }
-                
-                data = [
-                    {
+
+                if (editing == null) {
+                    data = [
+                        {
+                            teacher: teacher,
+                            subject: subject,
+                            class_: c,
+                            perWeekFirst: parseInt(perWeekFirst),
+                            perWeekSecond: parseInt(perWeekSecond),
+                        },
+                    ].concat(data);
+                } else {
+                    relations[editing] = {
                         teacher: teacher,
                         subject: subject,
                         class_: c,
                         perWeekFirst: parseInt(perWeekFirst),
                         perWeekSecond: parseInt(perWeekSecond),
-                    },
-                ].concat(data);
+                    };
+                }
             });
 
             socket.send(
@@ -127,6 +140,7 @@
                     data: data.concat(relations).map(convertRelationToIndices),
                 })
             );
+            editing = null;
         }
     }}
 >
@@ -162,7 +176,11 @@
             <p>{teacher}</p>
             <p>{subject}</p>
             <p>{class_}</p>
-            <p>{(perWeekSecond == null) ? perWeekFirst : (perWeekFirst + " / " + perWeekSecond)}</p>
+            <p>
+                {perWeekSecond == null
+                    ? perWeekFirst
+                    : perWeekFirst + " / " + perWeekSecond}
+            </p>
             <button
                 on:click={() => {
                     socket.send(
@@ -174,7 +192,26 @@
                                 .map(convertRelationToIndices),
                         })
                     );
+                    editing = null;
                 }}>DELETE</button
+            >
+
+            <button
+                on:click={() => {
+                    editing = key;
+
+                    relationTeacher = relations[key].teacher;
+                    relationSubject = relations[key].subject;
+                    relationClasses = relations[key].class_;
+                    if (relations[key].perWeekSecond == null) {
+                        relationPerWeek = relations[key].perWeekFirst;
+                    } else {
+                        relationPerWeek =
+                            relations[key].perWeekFirst +
+                            "/" +
+                            relations[key].perWeekSecond;
+                    }
+                }}>EDIT</button
             >
         {/each}
     </div>
@@ -203,7 +240,7 @@
 
     .list {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr 100px;
+        grid-template-columns: 1fr 1fr 1fr 1fr 100px 100px;
         gap: 10px;
     }
 
