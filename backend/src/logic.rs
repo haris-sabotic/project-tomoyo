@@ -107,15 +107,11 @@ impl Timetable {
                 })
                 .collect();
 
-            for relation in class_relations.iter() {
-                println!(
-                    "T: {},  S: {},  F: {},  S: {:?}",
-                    self.data.teachers[relation.teacher].name,
-                    self.data.subjects[relation.subject].name,
-                    relation.per_week_first,
-                    relation.per_week_second
-                );
+            let mut leftover_doubles: Vec<Relation> = vec![];
 
+            println!("Placing single relations...");
+
+            for relation in class_relations.iter() {
                 let relation_slot = SlotData::PartiallyFilled {
                     teacher: relation.teacher,
                     subject: relation.subject,
@@ -124,6 +120,13 @@ impl Timetable {
                 match relation.per_week_second {
                     // single relation
                     None => {
+                        println!(
+                            "T: {},  S: {}    [{}]",
+                            self.data.teachers[relation.teacher].name,
+                            self.data.subjects[relation.subject].name,
+                            relation.per_week_first,
+                        );
+
                         for i in 0..class_slots.slots.len() {
                             match class_slots.slots[i] {
                                 Slot::Single(SlotData::Empty) => {
@@ -141,7 +144,35 @@ impl Timetable {
                     }
 
                     // double relation
+                    Some(_) => {
+                        leftover_doubles.push((*relation).clone());
+                    }
+                }
+            }
+
+            println!("Moving on to double relations...");
+
+            // Sort leftover double relations
+            leftover_doubles
+                .sort_by(|a, b| a.per_week_first.partial_cmp(&b.per_week_first).unwrap());
+            leftover_doubles.reverse();
+
+            for relation in leftover_doubles {
+                let relation_slot = SlotData::PartiallyFilled {
+                    teacher: relation.teacher,
+                    subject: relation.subject,
+                };
+
+                match relation.per_week_second {
                     Some(per_week_second) => {
+                        println!(
+                            "T: {},  S: {}    [{} / {:?}]",
+                            self.data.teachers[relation.teacher].name,
+                            self.data.subjects[relation.subject].name,
+                            relation.per_week_first,
+                            per_week_second
+                        );
+
                         let per_week_first = relation.per_week_first;
 
                         let mut first_group_placed = false;
@@ -425,19 +456,13 @@ impl Timetable {
                                 }
                             }
                         }
-
-                        /*
-                        if self.data.classes[relation.class].name == "S4E"
-                            && self.data.subjects[relation.subject].name
-                                == "Aplikativni softver (P)"
-                        {
-                            self.table = table;
-                            return;
-                        }
-                        */
                     }
+
+                    None => {}
                 }
             }
+
+            println!("Done.");
 
             println!("");
             c += 1;

@@ -1,0 +1,6 @@
+Separate Timetable.table for each shift
+
+Separate hard_cost and soft_cost call for each shift
+Separate generate_neighbor call for each shift
+
+Other than 2 hard costs and 2 soft costs, there's a 5th cost calculated separately during each iteration of the algorithm, which is the condition of teachers teaching only 1 shift during a day
