@@ -1,5 +1,4 @@
 use csv::{Reader, Writer};
-use logic::ClassSlots;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::{
@@ -20,7 +19,7 @@ pub mod cost;
 pub mod regular_tabs;
 use regular_tabs::*;
 
-use crate::logic::{Timetable, TimetableData};
+use crate::logic::{Shift, Timetable, TimetableData};
 
 pub mod logic;
 
@@ -132,6 +131,7 @@ impl Handler for Server {
                             }
 
                             timetable.data.relations.push(Relation {
+                                shift: v["shift"].as_i64().unwrap() as i32,
                                 teacher: v["teacher"].as_u64().unwrap() as usize,
                                 subject: v["subject"].as_u64().unwrap() as usize,
                                 class: v["class_"].as_u64().unwrap() as usize,
@@ -145,7 +145,8 @@ impl Handler for Server {
             }
 
             Some("initial_timetable") => {
-                timetable.generate_random_table(&self.out);
+                timetable.generate_random_table(Shift::First, &self.out);
+                timetable.generate_random_table(Shift::Second, &self.out);
                 send_timetable(&timetable, &self.out);
             }
 
@@ -156,9 +157,14 @@ impl Handler for Server {
             Some("play") => {
                 self.time = Instant::now();
 
-                let table = parsed_msg["data"]["table"].as_array().unwrap();
-                for i in 0..timetable.table.len() {
-                    timetable.table[i] = serde_json::from_value(table[i].clone()).unwrap();
+                let table = parsed_msg["data"]["table1"].as_array().unwrap();
+                for i in 0..timetable.table1.len() {
+                    timetable.table1[i] = serde_json::from_value(table[i].clone()).unwrap();
+                }
+
+                let table = parsed_msg["data"]["table2"].as_array().unwrap();
+                for i in 0..timetable.table2.len() {
+                    timetable.table2[i] = serde_json::from_value(table[i].clone()).unwrap();
                 }
 
                 self.running_algorithm
@@ -170,6 +176,14 @@ impl Handler for Server {
                 let alpha = parsed_msg["data"]["alpha"].as_f64().unwrap();
                 let t0 = parsed_msg["data"]["t0"].as_f64().unwrap();
                 let sa_max = parsed_msg["data"]["sa_max"].as_i64().unwrap();
+                let static_classes = parsed_msg["data"]["static_classes"]
+                    .as_str()
+                    .unwrap()
+                    .to_string();
+                let hard_1 = parsed_msg["data"]["hard_1"].as_i64().unwrap() as i32;
+                let soft_1 = parsed_msg["data"]["soft_1"].as_i64().unwrap() as i32;
+                let hard_2 = parsed_msg["data"]["hard_2"].as_i64().unwrap() as i32;
+                let soft_2 = parsed_msg["data"]["soft_2"].as_i64().unwrap() as i32;
 
                 thread::spawn(move || {
                     timetable_local_ref.lock().unwrap().start_algorithm(
@@ -178,6 +192,11 @@ impl Handler for Server {
                         alpha,
                         t0,
                         sa_max,
+                        &static_classes,
+                        hard_1,
+                        soft_1,
+                        hard_2,
+                        soft_2,
                     );
                 });
             }
@@ -195,12 +214,22 @@ impl Handler for Server {
             }
 
             Some("detailed_cost") => {
-                let data = parsed_msg["data"].as_array().unwrap();
-                for i in 0..timetable.table.len() {
-                    timetable.table[i] = serde_json::from_value(data[i].clone()).unwrap();
+                let data = parsed_msg["data"]["table1"].as_array().unwrap();
+                for i in 0..timetable.table1.len() {
+                    timetable.table1[i] = serde_json::from_value(data[i].clone()).unwrap();
                 }
 
-                timetable.detailed_cost();
+                let data = parsed_msg["data"]["table2"].as_array().unwrap();
+                for i in 0..timetable.table2.len() {
+                    timetable.table2[i] = serde_json::from_value(data[i].clone()).unwrap();
+                }
+
+                let hard_1 = parsed_msg["data"]["hard_1"].as_i64().unwrap() as i32;
+                let soft_1 = parsed_msg["data"]["soft_1"].as_i64().unwrap() as i32;
+                let hard_2 = parsed_msg["data"]["hard_2"].as_i64().unwrap() as i32;
+                let soft_2 = parsed_msg["data"]["soft_2"].as_i64().unwrap() as i32;
+
+                timetable.detailed_cost(hard_1, soft_1, hard_2, soft_2);
             }
 
             _ => panic!("Invalid message."),
@@ -216,9 +245,18 @@ fn handle_import(timetable: &mut Timetable, parsed_msg: &Value, out: &Sender) {
     match tab {
         "timetable" => {
             let contents = fs::read_to_string("./import/timetable.json").unwrap();
-            let table: Vec<ClassSlots> = serde_json::from_str(&contents).unwrap();
+            let json: Value = serde_json::from_str(&contents).unwrap();
 
-            timetable.table = table;
+            let table1 = json["table1"].as_array().unwrap();
+            for i in 0..timetable.table1.len() {
+                timetable.table1[i] = serde_json::from_value(table1[i].clone()).unwrap();
+            }
+
+            let table2 = json["table2"].as_array().unwrap();
+            for i in 0..timetable.table2.len() {
+                timetable.table2[i] = serde_json::from_value(table2[i].clone()).unwrap();
+            }
+
             send_timetable(timetable, out);
         }
         _ => {
@@ -277,7 +315,10 @@ fn handle_export(timetable: &mut Timetable, parsed_msg: &Value) {
 
     match tab {
         "timetable" => {
-            let json = json!(timetable.table);
+            let json = json!({
+                "table1": timetable.table1,
+                "table2": timetable.table2,
+            });
             fs::write("./export/timetable.json", json.to_string()).unwrap();
         }
         _ => {
@@ -333,7 +374,8 @@ fn send_timetable(timetable: &Timetable, out: &Sender) {
         "tab": "timetable",
         "data": {
             "max_periods_per_day": timetable.max_periods_per_day,
-            "table": timetable.table
+            "table1": timetable.table1,
+            "table2": timetable.table2
         }
     });
 
@@ -359,6 +401,7 @@ fn main() {
                     relations: vec![],
                 },
                 MAX_PERIODS_PER_DAY,
+                vec![],
                 vec![],
             ))),
             running_algorithm: Arc::new(AtomicBool::new(false)),

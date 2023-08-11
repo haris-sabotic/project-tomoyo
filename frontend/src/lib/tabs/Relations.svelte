@@ -9,6 +9,7 @@
         STORE_classes,
     } from "../store";
 
+    let relationShift = 1;
     let relationTeacher = "";
     let relationSubject = "";
     let relationClasses = "";
@@ -17,6 +18,7 @@
 
     STORE_relations.subscribe((value) => {
         relations = value;
+        console.log(relations);
     });
 
     let teachers = [];
@@ -46,6 +48,7 @@
 
     function convertRelationToIndices(relation) {
         return {
+            shift: relation.shift,
             teacher: teachers.findIndex(
                 (teacher) => teacher == relation.teacher
             ),
@@ -60,6 +63,7 @@
 
     function convertRelationFromIndices(relation) {
         return {
+            shift: relation.shift,
             teacher: teachers[relation.teacher],
             subject: subjects[relation.subject].name,
             class_: classes[relation.class_],
@@ -96,6 +100,7 @@
 
 <form
     on:submit|preventDefault={() => {
+        let shift = parseInt(relationShift.trim());
         let teacher = relationTeacher.trim();
         let subject = relationSubject.trim();
         let classes = relationClasses.trim();
@@ -115,6 +120,7 @@
                 if (editing == null) {
                     data = [
                         {
+                            shift: shift,
                             teacher: teacher,
                             subject: subject,
                             class_: c,
@@ -124,6 +130,7 @@
                     ].concat(data);
                 } else {
                     relations[editing] = {
+                        shift: shift,
                         teacher: teacher,
                         subject: subject,
                         class_: c,
@@ -140,10 +147,22 @@
                     data: data.concat(relations).map(convertRelationToIndices),
                 })
             );
+
+            console.log({
+                kind: "list",
+                tab: "relations",
+                data: data.concat(relations).map(convertRelationToIndices),
+            });
+
             editing = null;
         }
     }}
 >
+    <select bind:value={relationShift}>
+        <option value="1">FIRST</option>
+        <option value="2">SECOND</option>
+    </select>
+
     <select bind:value={relationTeacher}>
         {#each teachers as teacher}
             <option value={teacher}>
@@ -172,7 +191,8 @@
 
 <div class="list-wrapper">
     <div class="list">
-        {#each relations as { teacher, subject, class_, perWeekFirst, perWeekSecond }, key}
+        {#each relations as { shift, teacher, subject, class_, perWeekFirst, perWeekSecond }, key}
+            <p>{shift}</p>
             <p>{teacher}</p>
             <p>{subject}</p>
             <p>{class_}</p>
@@ -200,6 +220,7 @@
                 on:click={() => {
                     editing = key;
 
+                    relationShift = relations[key].shift.toString();
                     relationTeacher = relations[key].teacher;
                     relationSubject = relations[key].subject;
                     relationClasses = relations[key].class_;
@@ -240,7 +261,7 @@
 
     .list {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr 100px 100px;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 100px 100px;
         gap: 10px;
     }
 

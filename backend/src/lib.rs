@@ -24,6 +24,7 @@ pub struct Teacher {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Relation {
+    pub shift: i32, // 1 or 2
     pub teacher: usize,
     pub subject: usize,
     pub class: usize,

@@ -1,6 +1,20 @@
-Separate Timetable.table for each shift
+separate timetable.table for each shift
 
-Separate hard_cost and soft_cost call for each shift
-Separate generate_neighbor call for each shift
+separate hard_cost and soft_cost call for each shift
+separate generate_neighbor call for each shift
 
-Other than 2 hard costs and 2 soft costs, there's a 5th cost calculated separately during each iteration of the algorithm, which is the condition of teachers teaching only 1 shift during a day
+other than 2 hard costs and 2 soft costs, there's a 5th cost calculated separately during each iteration of the algorithm, which is the condition of teachers teaching only 1 shift during a day
+
+
+-----------------------
+
+
+BIG NOTE:
+
+Right now, the algorithm switches between the first and second shift on each iteration, but it keeps track of only 1 solution that it always compares to. Meaning that 1 of the shifts will be compared against the other shift's previous solution instead of its own. I think that's the s1 variable, but anyway, there need to be 2 solutions being kept track of.
+
+
+-----------------------
+
+
+On each iteration, generate a neigbor for both shifts simultaneously, add all 5 costs together (hard&soft for 1 shift, hard&soft for the other shift and the 5th universal cost) and if one of the 2 conditions are fulfilled, accept the solution, thereby changing both shifts at the same time. The 2 shifts cannot be modified one at a time.

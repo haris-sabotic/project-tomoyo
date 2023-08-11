@@ -1,7 +1,7 @@
 use std::{collections::HashMap, println, vec};
 
 use crate::{
-    logic::{Slot, SlotData, Timetable},
+    logic::{ClassSlots, Shift, Slot, SlotData, Timetable},
     util::{TeacherSlot, TeacherSlots},
 };
 
@@ -10,24 +10,16 @@ use crate::{
 /* ==================== */
 
 /// Increment points by 1 for each teacher teaching multiple classes in the same period
-pub fn hard_repeating_teachers(timetable: &Timetable) -> i32 {
+pub fn hard_repeating_teachers(timetable: &Timetable, shift: Shift) -> i32 {
     let mut points = 0;
 
     for period in 0..(timetable.max_periods_per_day * 5) {
         let mut seen_teachers: Vec<usize> = vec![];
 
-        for class in 0..timetable.table.len() {
-            match timetable.table[class].slots[period as usize] {
+        for class in 0..timetable.table(shift).len() {
+            match timetable.table(shift)[class].slots[period as usize] {
                 Slot::Single(s) => match s {
                     SlotData::PartiallyFilled { teacher, .. } => {
-                        if seen_teachers.contains(&teacher) {
-                            points += 1;
-                        } else {
-                            seen_teachers.push(teacher);
-                        }
-                    }
-
-                    SlotData::Filled { teacher, .. } => {
                         if seen_teachers.contains(&teacher) {
                             points += 1;
                         } else {
@@ -47,27 +39,11 @@ pub fn hard_repeating_teachers(timetable: &Timetable) -> i32 {
                             }
                         }
 
-                        SlotData::Filled { teacher, .. } => {
-                            if seen_teachers.contains(&teacher) {
-                                points += 1;
-                            } else {
-                                seen_teachers.push(teacher);
-                            }
-                        }
-
                         _ => {}
                     }
 
                     match second {
                         SlotData::PartiallyFilled { teacher, .. } => {
-                            if seen_teachers.contains(&teacher) {
-                                points += 1;
-                            } else {
-                                seen_teachers.push(teacher);
-                            }
-                        }
-
-                        SlotData::Filled { teacher, .. } => {
                             if seen_teachers.contains(&teacher) {
                                 points += 1;
                             } else {
@@ -86,30 +62,40 @@ pub fn hard_repeating_teachers(timetable: &Timetable) -> i32 {
 }
 
 /// Increment points by 1 for every hole in a class timetable
-pub fn hard_holes_in_class_timetable(timetable: &Timetable) -> i32 {
+pub fn hard_holes_in_class_timetable(timetable: &Timetable, shift: Shift) -> i32 {
     let mut points: i32 = 0;
 
-    for class_slots in timetable.table.iter() {
+    for class_slots in timetable.table(shift).iter() {
         for day in 0..5 {
+            let mut empty_slots_single = 0;
             let mut empty_slots = 0;
             for period in 0..timetable.max_periods_per_day {
                 let index = day * timetable.max_periods_per_day + period;
 
                 match class_slots.slots[index as usize] {
-                    Slot::Single(SlotData::Empty)
-                    | Slot::Double {
+                    Slot::Single(SlotData::Empty) => {
+                        empty_slots += 1;
+                        empty_slots_single += 1;
+                    }
+
+                    Slot::Double {
                         first: SlotData::Empty,
-                        second: SlotData::PartiallyFilled { .. } | SlotData::Filled { .. },
+                        second: SlotData::PartiallyFilled { .. },
                         ..
                     }
                     | Slot::Double {
-                        first: SlotData::PartiallyFilled { .. } | SlotData::Filled { .. },
+                        first: SlotData::PartiallyFilled { .. },
                         second: SlotData::Empty,
                         ..
                     } => empty_slots += 1,
 
                     _ => {}
                 }
+            }
+
+            // just give up right away if the day was entirely empty
+            if empty_slots_single == timetable.max_periods_per_day {
+                continue;
             }
 
             let mut start = 0;
@@ -120,7 +106,7 @@ pub fn hard_holes_in_class_timetable(timetable: &Timetable) -> i32 {
                     Slot::Single(_) => break,
 
                     Slot::Double {
-                        first: SlotData::PartiallyFilled { .. } | SlotData::Filled { .. },
+                        first: SlotData::PartiallyFilled { .. },
                         second: SlotData::Empty,
                         ..
                     } => empty_slots -= 1,
@@ -144,7 +130,7 @@ pub fn hard_holes_in_class_timetable(timetable: &Timetable) -> i32 {
                     Slot::Single(_) => break,
 
                     Slot::Double {
-                        first: SlotData::PartiallyFilled { .. } | SlotData::Filled { .. },
+                        first: SlotData::PartiallyFilled { .. },
                         second: SlotData::Empty,
                         ..
                     } => {
@@ -165,23 +151,16 @@ pub fn hard_holes_in_class_timetable(timetable: &Timetable) -> i32 {
 /// Increment points by 1 for each period during which too many classes are being held with the same kind
 ///
 /// Example: During the 2nd period of Tuesday, 5 IT classes are being held, when there's only 3 computer classrooms in the school
-pub fn hard_too_many_subjects_of_same_kind(timetable: &Timetable) -> i32 {
+pub fn hard_too_many_subjects_of_same_kind(timetable: &Timetable, shift: Shift) -> i32 {
     let mut points = 0;
 
     for period in 0..(timetable.max_periods_per_day * 5) {
         let mut subject_kinds_count: HashMap<String, u32> = HashMap::new();
 
-        for class_slots in timetable.table.iter() {
+        for class_slots in timetable.table(shift).iter() {
             match class_slots.slots[period as usize] {
                 Slot::Single(s) => match s {
                     SlotData::PartiallyFilled { subject, .. } => {
-                        subject_kinds_count
-                            .entry(timetable.data.subjects[subject].kind.clone())
-                            .and_modify(|c| *c += 1)
-                            .or_insert(1);
-                    }
-
-                    SlotData::Filled { subject, .. } => {
                         subject_kinds_count
                             .entry(timetable.data.subjects[subject].kind.clone())
                             .and_modify(|c| *c += 1)
@@ -199,25 +178,11 @@ pub fn hard_too_many_subjects_of_same_kind(timetable: &Timetable) -> i32 {
                                 .or_insert(1);
                         }
 
-                        SlotData::Filled { subject, .. } => {
-                            subject_kinds_count
-                                .entry(timetable.data.subjects[subject].kind.clone())
-                                .and_modify(|c| *c += 1)
-                                .or_insert(1);
-                        }
-
                         _ => {}
                     }
 
                     match second {
                         SlotData::PartiallyFilled { subject, .. } => {
-                            subject_kinds_count
-                                .entry(timetable.data.subjects[subject].kind.clone())
-                                .and_modify(|c| *c += 1)
-                                .or_insert(1);
-                        }
-
-                        SlotData::Filled { subject, .. } => {
                             subject_kinds_count
                                 .entry(timetable.data.subjects[subject].kind.clone())
                                 .and_modify(|c| *c += 1)
@@ -265,12 +230,12 @@ pub fn hard_too_many_subjects_of_same_kind(timetable: &Timetable) -> i32 {
     points
 }
 
-pub fn hard_block_classes(timetable: &Timetable) -> i32 {
+pub fn hard_block_classes(timetable: &Timetable, shift: Shift) -> i32 {
     let mut points: i32 = 0;
 
     let subjects = vec![67, 66, 64, 58];
 
-    for class_slots in timetable.table.iter() {
+    for class_slots in timetable.table(shift).iter() {
         for subject in subjects.iter() {
             let mut block_found = false;
             let mut subject_exists = false;
@@ -323,7 +288,7 @@ pub fn hard_block_classes(timetable: &Timetable) -> i32 {
     points
 }
 
-pub fn hard_specific_subject_days(timetable: &Timetable) -> i32 {
+pub fn hard_specific_subject_days(timetable: &Timetable, shift: Shift) -> i32 {
     let mut points = 0;
 
     let subjects = vec![67, 66, 65, 64, 63, 62, 61, 60, 59, 58];
@@ -338,7 +303,7 @@ pub fn hard_specific_subject_days(timetable: &Timetable) -> i32 {
             for period in 0..timetable.max_periods_per_day {
                 let index = day * timetable.max_periods_per_day + period;
 
-                match timetable.table[*class as usize].slots[index as usize] {
+                match timetable.table(shift)[*class as usize].slots[index as usize] {
                     Slot::Single(s) => match s {
                         SlotData::PartiallyFilled { subject, .. } => {
                             if subjects.contains(&subject) {
@@ -363,13 +328,13 @@ pub fn hard_specific_subject_days(timetable: &Timetable) -> i32 {
     points
 }
 
-pub fn hard_subject_per_day_limits(timetable: &Timetable) -> i32 {
+pub fn hard_subject_per_day_limits(timetable: &Timetable, shift: Shift) -> i32 {
     let mut points = 0;
 
     let subjects2 = vec![67, 66, 64, 58];
     let subjects1 = vec![59];
 
-    for class_slots in timetable.table.iter() {
+    for class_slots in timetable.table(shift).iter() {
         for day in 0..5 {
             let mut subject_counts: HashMap<usize, i32> = HashMap::new();
 
@@ -407,10 +372,10 @@ pub fn hard_subject_per_day_limits(timetable: &Timetable) -> i32 {
     points
 }
 
-pub fn hard_subject_holes(timetable: &Timetable) -> i32 {
+pub fn hard_subject_holes(timetable: &Timetable, shift: Shift) -> i32 {
     let mut points = 0;
 
-    for class_slots in timetable.table.iter() {
+    for class_slots in timetable.table(shift).iter() {
         for day in 0..5 {
             let mut last_subject: i32 = -1;
             let mut seen_subjects: Vec<usize> = vec![];
@@ -443,15 +408,152 @@ pub fn hard_subject_holes(timetable: &Timetable) -> i32 {
     points
 }
 
+pub fn hard_teacher_shift_spread(timetable: &Timetable, shift: Shift) -> i32 {
+    let mut points = 0;
+
+    let teacher_spread: HashMap<&str, [i32; 5]> = HashMap::from([
+        ("Stanisic Milanka", [1, 3, 2, 2, 2]),
+        ("Knezevic Svetlana", [1, 3, 2, 2, 2]),
+        ("Scepanovic Suzana", [2, 3, 1, 1, 1]),
+        ("Becirovic Emsada", [1, 1, 1, 2, 2]),
+        ("Sukovic Biljana", [1, 1, 3, 2, 2]),
+        ("Scekic Jelena", [2, 1, 1, 1, 1]),
+        ("Mandic Olivera", [2, 2, 2, 1, 1]),
+        ("Ivanovic Olivera", [2, 2, 1, 1, 1]),
+        ("Papic Spasoje", [2, 1, 2, 2, 2]),
+        ("Zezelj Marija", [2, 2, 2, 1, 1]),
+        ("Sanja Radusinovic", [2, 2, 3, 1, 1]),
+        ("Jelena Bogicevic", [1, 1, 2, 2, 2]),
+        ("Cimbaljevic Drago", [1, 1, 2, 2, 2]),
+        ("Zana Krgusic", [1, 2, 2, 2, 2]),
+        ("Dejan Maras", [2, 2, 1, 1, 2]),
+        ("Nevenka Roganovic", [2, 1, 2, 1, 2]),
+        ("Marija Babovic", [2, 2, 1, 1, 1]),
+        ("Natasa Stojanovic", [1, 1, 1, 1, 2]),
+    ]);
+
+    for day in 0..5 {
+        let mut seen_teachers: Vec<usize> = vec![];
+
+        for class_slots in timetable.table(shift).iter() {
+            for period in 0..timetable.max_periods_per_day {
+                let index = day * timetable.max_periods_per_day + period;
+
+                match class_slots.slots[index as usize] {
+                    Slot::Single(s) => match s {
+                        SlotData::PartiallyFilled { teacher, .. } => seen_teachers.push(teacher),
+
+                        _ => {}
+                    },
+                    Slot::Double { first, second, .. } => {
+                        match first {
+                            SlotData::PartiallyFilled { teacher, .. } => {
+                                seen_teachers.push(teacher)
+                            }
+
+                            _ => {}
+                        }
+
+                        match second {
+                            SlotData::PartiallyFilled { teacher, .. } => {
+                                seen_teachers.push(teacher)
+                            }
+
+                            _ => {}
+                        }
+                    }
+                }
+            }
+        }
+
+        for teacher in seen_teachers {
+            let name = timetable.data.teachers[teacher].name.as_str();
+
+            if teacher_spread.contains_key(&name) {
+                let s = teacher_spread[&name][day as usize];
+                if s != shift.to_i32() && s != 3 {
+                    points += 1;
+                }
+            }
+        }
+    }
+
+    points
+}
+
+pub fn hard_teacher_extra_constraints(timetable: &Timetable, shift: Shift) -> i32 {
+    let mut points = 0;
+
+    // 0 1 2 3 4 5 6    7 8 9 10 11 12 13    14 15 16 17 18 19 20    21 22 23 24 25 26 27    28 29 30 31 32 33 34
+    let blacklist: HashMap<usize, Vec<u32>> = HashMap::from([
+        (
+            19, // Brajovic Olga
+            vec![0, 1, 2, 7, 8, 9, 14, 15, 16, 21, 22, 23, 28, 29, 30],
+        ),
+        (
+            59, // Svetlana Miranovic
+            vec![0, 1, 7, 8, 14, 15, 21, 23, 28, 29],
+        ),
+        (79, vec![5, 6, 12, 13, 19, 20, 26, 27]), // Lidija Lazarevic
+        // Selman Sabotic ?????
+        (33, vec![28, 29, 30, 31, 32, 33, 34]), // Tadic Slobodan
+    ]);
+
+    for class_slots in timetable.table(shift).iter() {
+        for period in 0..(timetable.max_periods_per_day * 5) {
+            match class_slots.slots[period as usize] {
+                Slot::Single(s) => match s {
+                    SlotData::PartiallyFilled { teacher, .. } => {
+                        if blacklist.contains_key(&teacher) {
+                            if blacklist[&teacher].contains(&period) {
+                                points += 1;
+                            }
+                        }
+                    }
+
+                    _ => {}
+                },
+                Slot::Double { first, second, .. } => {
+                    match first {
+                        SlotData::PartiallyFilled { teacher, .. } => {
+                            if blacklist.contains_key(&teacher) {
+                                if blacklist[&teacher].contains(&period) {
+                                    points += 1;
+                                }
+                            }
+                        }
+
+                        _ => {}
+                    }
+
+                    match second {
+                        SlotData::PartiallyFilled { teacher, .. } => {
+                            if blacklist.contains_key(&teacher) {
+                                if blacklist[&teacher].contains(&period) {
+                                    points += 1;
+                                }
+                            }
+                        }
+
+                        _ => {}
+                    }
+                }
+            }
+        }
+    }
+
+    points
+}
+
 /* ==================== */
 /*   SOFT CONSTRAINTS   */
 /* ==================== */
 
 /// Increment points by 1 for each day in a class timetable that contains more periods than what's ideal (even spread)
-pub fn soft_class_spread(timetable: &Timetable) -> i32 {
+pub fn soft_class_spread(timetable: &Timetable, shift: Shift) -> i32 {
     let mut points = 0;
 
-    for class_slots in timetable.table.iter() {
+    for class_slots in timetable.table(shift).iter() {
         // total number of classes in a week
         let mut class_count = 0;
         for slot in class_slots.slots.iter() {
@@ -574,17 +676,9 @@ pub fn soft_teacher_class_spread(timetable: &Timetable, teacher_table: &Vec<Teac
                 }
             }
 
-            /*
-            if day_class_count > ideal_spread {
-                points += 1;
-            }
-
-            if day_class_count == 1 {
-                points += 1;
-            }
-            */
-
-            if day_class_count >= 6 || day_class_count == 1 {
+            if
+            /*day_class_count >= 6 ||*/
+            day_class_count == 1 {
                 points += 1;
             }
         }
@@ -647,12 +741,13 @@ pub fn soft_holes_in_teacher_timetable(
     points
 }
 
-pub fn soft_preferred_subject_times(timetable: &Timetable) -> i32 {
+pub fn soft_preferred_subject_times(timetable: &Timetable, shift: Shift) -> i32 {
     let mut points = 0;
 
-    for class_slots in timetable.table.iter() {
+    for class_slots in timetable.table(shift).iter() {
         for day in 0..5 {
             // math shouldn't be in the second half of a day
+            /*
             let start = (timetable.max_periods_per_day as f32 / 2 as f32).ceil() as u32 - 1;
             for period in start..timetable.max_periods_per_day {
                 let index = day * timetable.max_periods_per_day + period;
@@ -671,8 +766,10 @@ pub fn soft_preferred_subject_times(timetable: &Timetable) -> i32 {
                     _ => {}
                 }
             }
+            */
 
             // P.E. shouldn't be at the end of a day
+            /*
             let period = timetable.max_periods_per_day as usize - 1;
             match class_slots.slots
                 [day as usize * timetable.max_periods_per_day as usize + period as usize]
@@ -689,8 +786,121 @@ pub fn soft_preferred_subject_times(timetable: &Timetable) -> i32 {
 
                 _ => {}
             }
+            */
         }
     }
+
+    points
+}
+
+pub fn teacher_shift_overload(
+    max_periods_per_day: u32,
+    table1: &Vec<ClassSlots>,
+    table2: &Vec<ClassSlots>,
+) -> i32 {
+    let mut points = 0;
+
+    /*
+        for day in 0..5 {
+            let mut teacher_counts: HashMap<usize, i32> = HashMap::new();
+
+            for period in 0..max_periods_per_day {
+                let index = day * max_periods_per_day + period;
+
+                for class_slots in table1.iter() {
+                    match class_slots.slots[index as usize] {
+                        Slot::Single(s) => match s {
+                            SlotData::PartiallyFilled { teacher, .. } => {
+                                teacher_counts.insert(teacher, 1);
+                            }
+
+                            _ => {}
+                        },
+                        Slot::Double { first, second, .. } => {
+                            match first {
+                                SlotData::PartiallyFilled { teacher, .. } => {
+                                    teacher_counts.insert(teacher, 1);
+                                }
+
+                                _ => {}
+                            }
+
+                            match second {
+                                SlotData::PartiallyFilled { teacher, .. } => {
+                                    teacher_counts.insert(teacher, 1);
+                                }
+
+                                _ => {}
+                            }
+                        }
+                    }
+                }
+            }
+
+            for period in 0..max_periods_per_day {
+                let index = day * max_periods_per_day + period;
+
+                for class_slots in table2.iter() {
+                    match class_slots.slots[index as usize] {
+                        Slot::Single(s) => match s {
+                            SlotData::PartiallyFilled { teacher, .. } => {
+                                if !teacher_counts.contains_key(&teacher) {
+                                    continue;
+                                }
+
+                                if teacher_counts[&teacher] == 1 {
+                                    teacher_counts.insert(teacher, 2);
+                                } else if teacher_counts[&teacher] == 2 {
+                                    continue;
+                                }
+                            }
+
+                            _ => {}
+                        },
+                        Slot::Double { first, second, .. } => {
+                            match first {
+                                SlotData::PartiallyFilled { teacher, .. } => {
+                                    if !teacher_counts.contains_key(&teacher) {
+                                        continue;
+                                    }
+
+                                    if teacher_counts[&teacher] == 1 {
+                                        teacher_counts.insert(teacher, 2);
+                                    } else if teacher_counts[&teacher] == 2 {
+                                        continue;
+                                    }
+                                }
+
+                                _ => {}
+                            }
+
+                            match second {
+                                SlotData::PartiallyFilled { teacher, .. } => {
+                                    if !teacher_counts.contains_key(&teacher) {
+                                        continue;
+                                    }
+
+                                    if teacher_counts[&teacher] == 1 {
+                                        teacher_counts.insert(teacher, 2);
+                                    } else if teacher_counts[&teacher] == 2 {
+                                        continue;
+                                    }
+                                }
+
+                                _ => {}
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (_, count) in teacher_counts.iter() {
+                if *count == 2 {
+                    points += 1;
+                }
+            }
+        }
+    */
 
     points
 }

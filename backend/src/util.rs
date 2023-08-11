@@ -1,6 +1,5 @@
-use std::{collections::HashMap, vec};
+use std::vec;
 
-use project_tomoyo::Room;
 use serde_json::Value;
 use ws::Sender;
 
@@ -19,15 +18,7 @@ pub fn ws_send(sender: &Sender, json: &Value) {
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub enum TeacherSlot {
     Empty,
-    PartiallyFilled {
-        class: usize,
-        subject: usize,
-    },
-    Filled {
-        class: usize,
-        subject: usize,
-        room: usize,
-    },
+    PartiallyFilled { class: usize, subject: usize },
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -65,17 +56,6 @@ pub fn class_table_to_teacher_table(
                             subject: *subject,
                         }
                     }
-                    crate::logic::SlotData::Filled {
-                        teacher,
-                        subject,
-                        room,
-                    } => {
-                        table[*teacher].slots[i] = TeacherSlot::Filled {
-                            class: class_slots.class_index as usize,
-                            subject: *subject,
-                            room: *room,
-                        }
-                    }
                 },
 
                 crate::logic::Slot::Double { first, second, .. } => {
@@ -87,17 +67,6 @@ pub fn class_table_to_teacher_table(
                                 subject: *subject,
                             }
                         }
-                        crate::logic::SlotData::Filled {
-                            teacher,
-                            subject,
-                            room,
-                        } => {
-                            table[*teacher].slots[i] = TeacherSlot::Filled {
-                                class: class_slots.class_index as usize,
-                                subject: *subject,
-                                room: *room,
-                            }
-                        }
                     }
 
                     match second {
@@ -106,17 +75,6 @@ pub fn class_table_to_teacher_table(
                             table[*teacher].slots[i] = TeacherSlot::PartiallyFilled {
                                 class: class_slots.class_index as usize,
                                 subject: *subject,
-                            }
-                        }
-                        crate::logic::SlotData::Filled {
-                            teacher,
-                            subject,
-                            room,
-                        } => {
-                            table[*teacher].slots[i] = TeacherSlot::Filled {
-                                class: class_slots.class_index as usize,
-                                subject: *subject,
-                                room: *room,
                             }
                         }
                     }

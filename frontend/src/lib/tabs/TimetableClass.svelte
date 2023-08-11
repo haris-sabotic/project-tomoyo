@@ -3,6 +3,7 @@
 
     import TimetableClassSlot from "./TimetableClassSlot.svelte";
 
+    export let shift;
     export let class_index;
     export let timetable;
     export let subjects;
@@ -10,6 +11,14 @@
     export let rooms;
 
     const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+
+    let getTable = () => {
+        if (shift == 1) {
+            return timetable.table1
+        } else {
+            return timetable.table2
+        }
+    }
 </script>
 
 <table>
@@ -28,7 +37,7 @@
                 <TimetableClassSlot
                     day_separators={false}
                     slot_index={day * timetable.max_periods_per_day + period}
-                    slot={timetable.table[class_index].slots[day * timetable.max_periods_per_day + period]}
+                    slot={getTable()[class_index].slots[day * timetable.max_periods_per_day + period]}
                     {subjects}
                     {teachers}
                     {rooms}

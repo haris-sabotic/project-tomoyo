@@ -73,7 +73,7 @@ pub fn send_relations(sender: &Sender, relations: &Vec<Relation>) {
     data.reserve(relations.len());
 
     for relation in relations.iter() {
-        data.push(json!({"teacher": relation.teacher, "subject": relation.subject, "class_": relation.class, "perWeekFirst": relation.per_week_first, "perWeekSecond": relation.per_week_second}));
+        data.push(json!({"shift": relation.shift, "teacher": relation.teacher, "subject": relation.subject, "class_": relation.class, "perWeekFirst": relation.per_week_first, "perWeekSecond": relation.per_week_second}));
     }
 
     let json = json!({
@@ -166,6 +166,7 @@ pub fn update_relations(relations: &mut Vec<Relation>, data: &Value) {
                 }
 
                 relations.push(Relation {
+                    shift: el["shift"].as_i64().unwrap() as i32,
                     teacher: el["teacher"].as_i64().unwrap() as usize,
                     subject: el["subject"].as_i64().unwrap() as usize,
                     class: el["class_"].as_i64().unwrap() as usize,

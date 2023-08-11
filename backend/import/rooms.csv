@@ -1,10 +1,10 @@
 name,kinds
-M6,masinska laptop
-M5,masinska laptop
-M4,masinska laptop
-M3,masinska laptop
-M2,masinska laptop
-M1,masinska laptop
+M6,masinska laptop energetika
+M5,masinska laptop energetika
+M4,masinska laptop energetika
+M3,masinska laptop energetika
+M2,masinska laptop energetika
+M1,masinska laptop energetika
 Sala,sala
 Sala,sala
 23,computer laptop regular vjezbe
@@ -30,3 +30,4 @@ Sala,sala
 3,regular
 2,computer laptop
 1,computer laptop
+SD,sd energetika
