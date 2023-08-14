@@ -148,7 +148,7 @@ Osnove graf. dizajna: S1A (6)
 Raskovic Violeta:
 Osnove racunarstva: S1B,S1C (1+2)
 Operativni sistemi: S1A (2+0+2)
-Softv. alati za proj. u el.tehn.: S3E
+Softv. alati za proj. u el.tehn.: S3E (4)
 
 Kojovic Nikola:
 Odrz. rac. hardv.: S3D,S3E (1+0+4)

@@ -208,7 +208,8 @@ impl Handler for Server {
             }
 
             Some("fill_rooms") => {
-                timetable.fill_rooms();
+                timetable.fill_rooms(Shift::First);
+                timetable.fill_rooms(Shift::Second);
 
                 send_timetable(&timetable, &self.out);
             }

@@ -2,20 +2,20 @@ name,kind
 Autoelektronika,regular
 Engleski jezik u elektronici,regular
 Projektovanje u elektronici i automatici,masinska
-Proizvodnja elektronskih uredjaja i sistema (T),regular
+Proizvodnja elektronskih uredjaja i sistema (T),masinska-regular
 Sistemi industrijske elektronike i automatike (T),masinska
-Elektronski komercijalni sistemi (T),regular
-Elektronski komercijalni uredjaji (T),regular
+Elektronski komercijalni sistemi (T),masinska-regular
+Elektronski komercijalni uredjaji (T),masinska-regular
 Video tehnika,regular
 Engleski jezik u elektronskim komunikacijama,regular
-Projektovanje telekomunikacionih korisnickih sistema,computer
-Opticki komunikacioni sistemi (T),regular
+Projektovanje telekomunikacionih korisnickih sistema,masinska-computer
+Opticki komunikacioni sistemi (T),masinska-regular
 Bezicni komunikacioni sistemi,regular
 Telekomunikacioni korisnicki sistemi II (T),regular
 Komutacioni i data centri,regular
 Engleski jezik u racunarstvu,regular
-Projektovanje racunarskih mreza,laptop
-Zastita racunarskih sistema i mreza (P),laptop
+Projektovanje racunarskih mreza,masinska
+Zastita racunarskih sistema i mreza (P),masinska-computer
 Zastita racunarskih sistema i mreza (T),regular
 Instaliranje i odrzavanje racunarskih mreza (T),regular
 Aplikativni softver (P),computer
@@ -34,7 +34,7 @@ Savremeno odrastanje,regular
 Elektrotehnicki materijali,regular
 Osnove programiranja (T),regular
 Elektronske komunikacije,regular
-Osnove proceduralnog programiranja (P),computer
+Osnove proceduralnog programiranja (P),masinska-computer
 Osnove proceduralnog programiranja (T),regular
 Izvodjenje telekomunikacionih instalacija (P),masinska
 Izvodjenje telekomunikacionih instalacija (T),regular
@@ -42,7 +42,7 @@ Elektronske komunikacije II,regular
 Racunarska grafika i animacija,computer
 Fotografija (P),computer
 Fotografija (T),computer
-Analogna i digitalna elektronika (P),vjezbe
+Analogna i digitalna elektronika (P),14-23
 Analogna i digitalna elektronika (T),regular
 Racunarski hardver (T),regular
 Osnove racunarskih mreza,regular
@@ -67,22 +67,22 @@ Engleski,regular
 Informatika,computer
 Fizika,regular
 Matematika,regular
-Analogna elektronika (P),regular
+Analogna elektronika (P),14
 Analogna elektronika (T),regular
-Osnove programiranja (P),laptop
-Instaliranje i odrzavanje racunarskih mreza (P),laptop
-Racunarski hardver (P),laptop
+Osnove programiranja (P),masinska-computer
+Instaliranje i odrzavanje racunarskih mreza (P),masinska-computer
+Racunarski hardver (P),masinska-computer
 Elektronski komercijalni sistemi (P),masinska
 Elektronski komercijalni uredjaji (P),masinska
 Upravljanje softverskim projektima (P),computer
-Telekomunikacioni korisnicki sistemi II (P),regular
-Bezicni komutacioni centri (T),regular
-Bezicni komutacioni centri (P),regular
+Telekomunikacioni korisnicki sistemi II (P),masinska-regular
+Bezicni komutacioni centri (T),masinska-regular
+Bezicni komutacioni centri (P),masinska-regular
 Proizvodnja elektronskih uredjaja i sistema (P),masinska
 Komutacioni i data sistemi (T),regular
 Komutacioni i data sistemi (P),regular
-Opticki komunikacioni sistemi (P),regular
-Sistemi industrijske elektronike i automatike (P),masinska
+Opticki komunikacioni sistemi (P),masinska-regular
+Sistemi industrijske elektronike i automatike (P),regular
 Uvod u instalacije elektronskih uredjaja i sistema (T),regular
 Uvod u instalacije elektronskih uredjaja i sistema (P),masinska
 Uvod u izgradnju elektronske komunikacione infrastrukture (T),regular
@@ -92,25 +92,25 @@ Socijalne mreze i globalizacija,regular
 Izvodjenje elektricnih instalacija i osvjetljenja u gradjevinskim objektima,masinska
 Izvori elektricne energije,regular
 Uvod u energetiku (T),regular
-Uvod u energetiku (P),energetika
+Uvod u energetiku (P),sd
 Elektricne instalacije (T),regular
-Elektricne instalacije (P),masinka
+Elektricne instalacije (P),masinska
 Odrzavanje elektricnih instalacija i uredjaja u domacinstvu (T),regular
-Odrzavanje elektricnih instalacija i uredjaja u domacinstvu (P),masinska
+Odrzavanje elektricnih instalacija i uredjaja u domacinstvu (P),masinska-sd
 Osnove elektrotehnike I (T),regular
-Osnove elektrotehnike I (P),energetika
+Osnove elektrotehnike I (P),masinska-regular-sd
 Elektromotorni pogoni (T),regular
 Elektromotorni pogoni (P),masinska
-Softverski alati za projektovanje u elektrotehnici,computer
-Visokonaponska razvodna postrojenja (T),masinska
-Visokonaponska razvodna postrojenja (P),masinka
+Softverski alati za projektovanje u elektrotehnici,masinska-computer
+Visokonaponska razvodna postrojenja (T),regular
+Visokonaponska razvodna postrojenja (P),masinska
 Prenos elektricne energije (T),regular
-Prenos elektricne energije (P),energetika
+Prenos elektricne energije (P),sd
 Pripremni elektroinstalaterski radovi,masinska
 Uvod u elektronske komunikacije,regular
 Osnove racunarstva (T),regular
 Osnove racunarstva (P),computer
-Audio tehnika,computer
+Audio tehnika,regular
 Operativni sistemi (T),regular
 Operativni sistemi (P),computer
 Uvod u programiranje (T),regular
@@ -119,26 +119,26 @@ Veb i mobilni komunikacioni servisi (T),regular
 Veb i mobilni komunikacioni servisi (P),computer
 Relacione baze podataka (T),regular
 Relacione baze podataka (P),computer
-Uvod u instalacije racunarskih sistema i mreza (T),regular
-Uvod u instalacije racunarskih sistema i mreza (P),masinska
+Uvod u instalacije racunarskih sistema i mreza (T),masinska-regular
+Uvod u instalacije racunarskih sistema i mreza (P),masinska-regular
 Administritanje operativnih sistema (T),regular
-Administritanje operativnih sistema (P),computer
+Administritanje operativnih sistema (P),masinska-computer
 Administritanje racunarskih mreza (T),regular
-Administritanje racunarskih mreza (P),computer
+Administritanje racunarskih mreza (P),masinska-computer
 Osnove grafickog dizajna,computer
 Odrzavanje racunarskog hardvera (T),regular
-Odrzavanje racunarskog hardvera (P),computer
+Odrzavanje racunarskog hardvera (P),masinska-computer
 Racunarske mreze (T),regular
-Racunarske mreze (P),masinska
+Racunarske mreze (P),masinska-regular
 Telekomunikacioni korisnicki sistemi I (T),regular
-Telekomunikacioni korisnicki sistemi I (P),masinka
+Telekomunikacioni korisnicki sistemi I (P),masinska
 Elektronski sigurnosni sistemi (T),regular
 Elektronski sigurnosni sistemi (P),regular
-Prenosno-pristupne mreze (T),regular
+Prenosno-pristupne mreze (T),masinska-regular
 Prenosno-pristupne mreze (P),masinska
 Produkcija multimedijalnog sadrzaja,computer
 Digitalna elektronika (T),regular
-Digitalna elektronika (P),vjezbe
+Digitalna elektronika (P),14
 Razvoj veb aplikacija I (T),regular
 Razvoj veb aplikacija I (P),computer
 Telekomunikacione mreze (T),regular
@@ -150,5 +150,21 @@ Razvoj mobilnih aplikacija I (T),regular
 Razvoj mobilnih aplikacija I (P),computer
 Instaliranje opreme elektronskih komunikacionih sistema,masinska
 Pripremni i pomocni radovi u izgradnji elektronske komunikacione infrastrukture,masinska
-Programiranje mikrokontrolera (T),computer
-Programiranje mikrokontrolera (P),computer
+Programiranje mikrokontrolera (T),regular
+Programiranje mikrokontrolera (P),masinska-14
+Osnove elektronike,regular
+Izvodjenje elektricnih instalacija i osvjetljenja (T),masinska
+Izvodjenje elektricnih instalacija i osvjetljenja (P),masinska
+Elektroinstalaterski radovi u gradjevinskim objektima,masinska
+Elektronika u elektroenergetici,masinska-14
+Izgradnja elektronske komunikacione infrastrukture,masinska
+Proizvodnja elektricne energije,regular
+Projektovanje u elektroenergetici,masinska
+Upravljanje elektromotornim pogonima (T),regular
+Upravljanje elektromotornim pogonima (P),masinska
+Eksploatacija elektroenergetskih sistema (T),regular
+Eksploatacija elektroenergetskih sistema (P),masinska
+Specijalne elektricne instalacije (T),regular
+Specijalne elektricne instalacije (P),masinska
+Distribucija i portosnja elektricne energije (T),regular
+Distribucija i portosnja elektricne energije (P),masinska

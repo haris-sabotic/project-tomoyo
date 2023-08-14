@@ -1,33 +1,34 @@
 name,kinds
-M6,masinska laptop energetika
-M5,masinska laptop energetika
-M4,masinska laptop energetika
-M3,masinska laptop energetika
-M2,masinska laptop energetika
-M1,masinska laptop energetika
+M6,masinska masinska-regular masinska-sd masinska-computer masinska-14 masinska-regular-sd
+M5,masinska masinska-regular masinska-sd masinska-computer masinska-14 masinska-regular-sd
+M4,masinska masinska-regular masinska-sd masinska-computer masinska-14 masinska-regular-sd
+M3,masinska masinska-regular masinska-sd masinska-computer masinska-14 masinska-regular-sd
+M2,masinska masinska-regular masinska-sd masinska-computer masinska-14 masinska-regular-sd
+M1,masinska masinska-regular masinska-sd masinska-computer masinska-14 masinska-regular-sd
 Sala,sala
 Sala,sala
-23,computer laptop regular vjezbe
-22,regular
-21,regular
-20,regular
-19,regular
-18,regular
-17,regular
-16,regular
-15,regular
-14,computer laptop vjezbe
-13,regular
-12,regular
-11,regular
-10,computer laptop
-9,computer laptop
-8,computer laptop
-7,computer laptop
-6,regular
-5,regular
-4,regular
-3,regular
-2,computer laptop
-1,computer laptop
-SD,sd energetika
+22,regular masinska-regular masinska-regular-sd
+21,regular masinska-regular masinska-regular-sd
+20,regular masinska-regular masinska-regular-sd
+19,regular masinska-regular masinska-regular-sd
+18,regular masinska-regular masinska-regular-sd
+17,regular masinska-regular masinska-regular-sd
+16,regular masinska-regular masinska-regular-sd
+15,regular masinska-regular masinska-regular-sd
+14,computer 14 masinska-computer masinska-14 14-23 masinska-regular
+13,regular masinska-regular masinska-regular-sd
+12,regular masinska-regular masinska-regular-sd
+11,regular masinska-regular masinska-regular-sd
+10,computer masinska-computer
+9,computer masinska-computer
+8,computer masinska-computer
+7,computer masinska-computer
+6,regular masinska-regular masinska-regular-sd
+5,regular masinska-regular masinska-regular-sd
+4,regular masinska-regular masinska-regular-sd
+3,regular masinska-regular masinska-regular-sd
+2,computer masinska-computer
+1,computer masinska-computer
+SD,sd masinska-sd masinska-regular-sd
+Sala,sala
+23,computer regular masinska-regular masinska-computer masinska-regular-sd 14-23

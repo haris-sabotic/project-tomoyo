@@ -1,11 +1,11 @@
-use std::vec;
+use std::{collections::HashMap, println, vec};
 
 use serde_json::Value;
 use ws::Sender;
 
 use serde::{Deserialize, Serialize};
 
-use crate::logic::{ClassSlots, TimetableData};
+use crate::logic::{ClassSlots, Timetable, TimetableData};
 
 pub fn ws_send(sender: &Sender, json: &Value) {
     sender.send(json.to_string()).unwrap();
@@ -50,7 +50,9 @@ pub fn class_table_to_teacher_table(
             match slot {
                 crate::logic::Slot::Single(s) => match s {
                     crate::logic::SlotData::Empty => {}
-                    crate::logic::SlotData::PartiallyFilled { teacher, subject } => {
+                    crate::logic::SlotData::PartiallyFilled {
+                        teacher, subject, ..
+                    } => {
                         table[*teacher].slots[i] = TeacherSlot::PartiallyFilled {
                             class: class_slots.class_index as usize,
                             subject: *subject,
@@ -61,7 +63,9 @@ pub fn class_table_to_teacher_table(
                 crate::logic::Slot::Double { first, second, .. } => {
                     match first {
                         crate::logic::SlotData::Empty => {}
-                        crate::logic::SlotData::PartiallyFilled { teacher, subject } => {
+                        crate::logic::SlotData::PartiallyFilled {
+                            teacher, subject, ..
+                        } => {
                             table[*teacher].slots[i] = TeacherSlot::PartiallyFilled {
                                 class: class_slots.class_index as usize,
                                 subject: *subject,
@@ -71,7 +75,9 @@ pub fn class_table_to_teacher_table(
 
                     match second {
                         crate::logic::SlotData::Empty => {}
-                        crate::logic::SlotData::PartiallyFilled { teacher, subject } => {
+                        crate::logic::SlotData::PartiallyFilled {
+                            teacher, subject, ..
+                        } => {
                             table[*teacher].slots[i] = TeacherSlot::PartiallyFilled {
                                 class: class_slots.class_index as usize,
                                 subject: *subject,
@@ -86,4 +92,36 @@ pub fn class_table_to_teacher_table(
     }
 
     table
+}
+
+pub fn teacher_count_per_shift(timetable: &Timetable) {
+    let mut count1: HashMap<usize, u32> = HashMap::new();
+    let mut count2: HashMap<usize, u32> = HashMap::new();
+
+    for relation in timetable.data.relations.iter() {
+        let n = relation.per_week_first + relation.per_week_second.unwrap_or(0);
+
+        if relation.shift == 1 {
+            count1
+                .entry(relation.teacher)
+                .and_modify(|c| *c += n)
+                .or_insert(n);
+        } else if relation.shift == 2 {
+            count2
+                .entry(relation.teacher)
+                .and_modify(|c| *c += n)
+                .or_insert(n);
+        } else {
+            println!("Invalid shift: {:?}", relation);
+        }
+    }
+
+    for teacher_id in 0..timetable.data.teachers.len() {
+        println!(
+            "{}: {} {}",
+            timetable.data.teachers[teacher_id].name,
+            count1.get(&teacher_id).unwrap_or(&0),
+            count2.get(&teacher_id).unwrap_or(&0),
+        );
+    }
 }

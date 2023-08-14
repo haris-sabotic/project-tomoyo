@@ -1,0 +1,97 @@
+Total computer: 202
+Total masinska-computer: 74
+
+Shift 1:
+  S4H:
+    sala: 2
+    masinska: 11
+    regular: 19
+  S4G:
+    computer: 3
+    sala: 2
+    regular: 27
+  S4F:
+    sala: 2
+    computer: 4
+    masinska-computer: 20
+    regular: 19
+  S4E:
+    sala: 2
+    computer: 4
+    regular: 19
+    masinska-computer: 20
+  S4D:
+    sala: 2
+    computer: 4
+    masinska-computer: 20
+    regular: 19
+  S4C:
+    sala: 2
+    regular: 21
+    computer: 20
+  S4B:
+    sala: 2
+    regular: 21
+    computer: 20
+  S4A:
+    regular: 21
+    computer: 20
+    sala: 2
+  S2H:
+    computer: 4
+    masinska-computer: 2
+    sala: 2
+    14: 2
+    regular: 24
+  S2G:
+    sala: 2
+    masinska: 1
+    regular: 24
+    computer: 7
+  S2F:
+    regular: 24
+    sala: 2
+    masinska-computer: 4
+    computer: 12
+  S2E:
+    masinska-computer: 4
+    computer: 8
+    regular: 26
+    sala: 2
+  S2D:
+    masinska-computer: 4
+    sala: 2
+    regular: 24
+    computer: 12
+  S2C:
+    sala: 2
+    regular: 18
+    computer: 24
+  S2B:
+    sala: 2
+    regular: 18
+    computer: 24
+  S2A:
+    sala: 2
+    regular: 17
+    computer: 26
+  R2A:
+    sala: 2
+    regular: 21
+    masinska-14: 4
+    masinska: 14
+  R2B:
+    regular: 15
+    masinska: 10
+    computer: 2
+    sala: 2
+  E2A:
+    sala: 2
+    regular: 22
+    masinska-14: 4
+    masinska: 6
+    computer: 4
+  E4A:
+    masinska: 16
+    regular: 23
+    sala: 2

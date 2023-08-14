@@ -17,7 +17,11 @@ use crate::{cost, util};
 #[derive(Clone, Copy, Serialize, Deserialize, Debug)]
 pub enum SlotData {
     Empty,
-    PartiallyFilled { teacher: usize, subject: usize },
+    PartiallyFilled {
+        teacher: usize,
+        subject: usize,
+        room: Option<usize>,
+    },
 }
 
 #[derive(Clone, Copy, Serialize, Deserialize, Debug)]
@@ -157,6 +161,7 @@ impl Timetable {
                 let relation_slot = SlotData::PartiallyFilled {
                     teacher: relation.teacher,
                     subject: relation.subject,
+                    room: None,
                 };
 
                 match relation.per_week_second {
@@ -194,6 +199,11 @@ impl Timetable {
 
             println!("Moving on to double relations...");
 
+            if c == 34 {
+                c += 1;
+                continue;
+            }
+
             // Sort leftover double relations
             leftover_doubles
                 .sort_by(|a, b| a.per_week_first.partial_cmp(&b.per_week_first).unwrap());
@@ -203,6 +213,7 @@ impl Timetable {
                 let relation_slot = SlotData::PartiallyFilled {
                     teacher: relation.teacher,
                     subject: relation.subject,
+                    room: None,
                 };
 
                 match relation.per_week_second {
@@ -540,16 +551,28 @@ impl Timetable {
 
             while running.load(Ordering::Relaxed) {
                 for _ in 0..sa_max {
+                    /*
                     let new_s1 = s1.generate_neighbor(Shift::First, out, static_classes);
+                    // let new_s2 = s2.generate_neighbor(Shift::Second, out, static_classes);
 
-                    let new_s1_cost_hard = hard_1 * new_s1.hard_points(Shift::First);
-                    let s1_cost_hard = hard_1 * s1.hard_points(Shift::First);
+                    /*
+                    let new_s_cost_shifts = cost::teacher_shifts(
+                        &new_s1.table1,
+                        &new_s2.table2,
+                        self.max_periods_per_day,
+                    );
+                    let s_cost_shifts =
+                        cost::teacher_shifts(&s1.table1, &s2.table2, self.max_periods_per_day);
+                    */
 
-                    let new_s1_cost_soft = soft_1 * new_s1.soft_points(Shift::First);
-                    let s1_cost_soft = soft_1 * s1.soft_points(Shift::First);
+                    let new_s1_cost_hard = new_s1.hard_points(Shift::First, hard_1);
+                    let s1_cost_hard = s1.hard_points(Shift::First, hard_1);
 
-                    let new_s1_cost = new_s1_cost_hard + new_s1_cost_soft;
-                    let s1_cost = s1_cost_hard + s1_cost_soft;
+                    let new_s1_cost_soft = new_s1.soft_points(Shift::First, soft_1);
+                    let s1_cost_soft = s1.soft_points(Shift::First, soft_1);
+
+                    let new_s1_cost = new_s1_cost_hard + new_s1_cost_soft /* + new_s_cost_shifts*/;
+                    let s1_cost = s1_cost_hard + s1_cost_soft /* + s_cost_shifts*/;
 
                     let delta1 = new_s1_cost - s1_cost;
 
@@ -557,17 +580,6 @@ impl Timetable {
                     if delta1 <= 0 {
                         s1 = new_s1;
                         updated1 = true;
-
-                    /*
-                    let best_s1_cost_hard = best_s1.hard_points(Shift::First);
-                    let best_s1_cost_soft = best_s1.soft_points(Shift::First);
-                    let best_s1_cost_other = best_s1.other_points();
-                    let best_s1_cost =
-                        best_s1_cost_soft + best_s1_cost_hard + best_s1_cost_other;
-                    if new_s1_cost < best_s1_cost {
-                        best_s1 = s1.clone();
-                    }
-                    */
                     } else {
                         let x: f64 = thread_rng().gen_range(0.0..1.0);
 
@@ -581,19 +593,19 @@ impl Timetable {
                             updated1 = true;
                         }
                     }
-
+                    */
                     // ================
 
                     let new_s2 = s2.generate_neighbor(Shift::Second, out, static_classes);
 
-                    let new_s2_cost_hard = hard_2 * new_s2.hard_points(Shift::Second);
-                    let s2_cost_hard = hard_2 * s2.hard_points(Shift::Second);
+                    let new_s2_cost_hard = new_s2.hard_points(Shift::Second, hard_2);
+                    let s2_cost_hard = s2.hard_points(Shift::Second, hard_2);
 
-                    let new_s2_cost_soft = soft_2 * new_s2.soft_points(Shift::Second);
-                    let s2_cost_soft = soft_2 * s2.soft_points(Shift::Second);
+                    let new_s2_cost_soft = new_s2.soft_points(Shift::Second, soft_2);
+                    let s2_cost_soft = s2.soft_points(Shift::Second, soft_2);
 
-                    let new_s2_cost = new_s2_cost_hard + new_s2_cost_soft;
-                    let s2_cost = s2_cost_hard + s2_cost_soft;
+                    let new_s2_cost = new_s2_cost_hard + new_s2_cost_soft /* + new_s_cost_shifts*/;
+                    let s2_cost = s2_cost_hard + s2_cost_soft /* + s_cost_shifts*/;
 
                     let delta2 = new_s2_cost - s2_cost;
 
@@ -601,17 +613,6 @@ impl Timetable {
                     if delta2 <= 0 {
                         s2 = new_s2;
                         updated2 = true;
-
-                    /*
-                    let best_s2_cost_hard = best_s2.hard_points(Shift::Second);
-                    let best_s2_cost_soft = best_s2.soft_points(Shift::Second);
-                    let best_s2_cost_other = best_s2.other_points();
-                    let best_s2_cost =
-                        best_s2_cost_soft + best_s2_cost_hard + best_s2_cost_other;
-                    if new_s2_cost < best_s2_cost {
-                        best_s2 = s2.clone();
-                    }
-                    */
                     } else {
                         let x: f64 = thread_rng().gen_range(0.0..1.0);
 
@@ -625,16 +626,18 @@ impl Timetable {
                             updated2 = true;
                         }
                     }
-
                     // ================
 
-                    if updated1 || updated2 {
+                    if
+                    /*updated1 ||*/
+                    updated2 {
+                        /*
                         let (hard1, soft1) = if updated1 {
                             (new_s1_cost_hard, new_s1_cost_soft)
                         } else {
                             (s1_cost_hard, s1_cost_soft)
                         };
-
+                        */
                         let (hard2, soft2) = if updated2 {
                             (new_s2_cost_hard, new_s2_cost_soft)
                         } else {
@@ -642,8 +645,14 @@ impl Timetable {
                         };
 
                         println!(
-                            "[TEMP: {}]    [{: >3}, {: >3}]    [{: >3}, {: >3}]",
-                            t, hard1, soft1, hard2, soft2,
+                            // "[TEMP: {}] [{: >3}]   [{: >3}, {: >3}]    [{: >3}, {: >3}]",
+                            "[TEMP: {}]    [{: >3}, {: >3}]",
+                            t,
+                            // new_s_cost_shifts,
+                            // hard1,
+                            // soft1,
+                            hard2,
+                            soft2,
                         );
                     }
                 }
@@ -665,15 +674,20 @@ impl Timetable {
             util::class_table_to_teacher_table(&self.table2, &self.data, self.max_periods_per_day);
 
         println!("DETAILED COST");
+        /*
+        let cost_shifts = cost::teacher_shifts(&self.table1, &self.table2, self.max_periods_per_day);
+        println!("Shifts: {}", cost_shifts);
+        println!("--------------");
+        */
 
-        let hcost1 = hard_1 * cost::hard_repeating_teachers(self, Shift::First);
-        let hcost2 = hard_1 * cost::hard_holes_in_class_timetable(self, Shift::First);
+        let hcost1 = hard_1 * cost::hard_repeating_teachers(self, Shift::First, false);
+        let hcost2 = 4 * cost::hard_holes_in_class_timetable(self, Shift::First);
         let hcost3 = hard_1 * cost::hard_too_many_subjects_of_same_kind(self, Shift::First);
         let hcost4 = hard_1 * cost::hard_block_classes(self, Shift::First);
         let hcost5 = hard_1 * cost::hard_specific_subject_days(self, Shift::First);
         let hcost6 = hard_1 * cost::hard_subject_per_day_limits(self, Shift::First);
-        let hcost7 = hard_1 * cost::hard_subject_holes(self, Shift::First);
-        let hcost8 = hard_1 * cost::hard_teacher_shift_spread(self, Shift::First);
+        let hcost7 = hard_1 * cost::hard_subject_holes(self, Shift::First, false);
+        let hcost8 = hard_1 * cost::hard_teacher_shift_spread(self, Shift::First, false);
         let hcost9 = hard_1 * cost::hard_teacher_extra_constraints(self, Shift::First);
 
         let scost1 = soft_1 * cost::soft_class_spread(self, Shift::First);
@@ -700,20 +714,28 @@ impl Timetable {
         println!("  (s) Teacher holes: {}", scost3);
         println!("  (s) Soft preferred subject times: {}", scost4);
 
-        let hcost1 = hard_2 * cost::hard_repeating_teachers(self, Shift::Second);
-        let hcost2 = hard_2 * cost::hard_holes_in_class_timetable(self, Shift::Second);
+        let hcost1 = hard_2 * cost::hard_repeating_teachers(self, Shift::Second, false);
+        let hcost2 = 4 * cost::hard_holes_in_class_timetable(self, Shift::Second);
         let hcost3 = hard_2 * cost::hard_too_many_subjects_of_same_kind(self, Shift::Second);
         let hcost4 = hard_2 * cost::hard_block_classes(self, Shift::Second);
         let hcost5 = hard_2 * cost::hard_specific_subject_days(self, Shift::Second);
         let hcost6 = hard_2 * cost::hard_subject_per_day_limits(self, Shift::Second);
-        let hcost7 = hard_2 * cost::hard_subject_holes(self, Shift::Second);
-        let hcost8 = hard_2 * cost::hard_teacher_shift_spread(self, Shift::Second);
+        let hcost7 = hard_2 * cost::hard_subject_holes(self, Shift::Second, false);
+        let hcost8 = hard_2 * cost::hard_teacher_shift_spread(self, Shift::Second, false);
         let hcost9 = hard_2 * cost::hard_teacher_extra_constraints(self, Shift::Second);
 
         let scost1 = soft_2 * cost::soft_class_spread(self, Shift::Second);
         let scost2 = soft_2 * cost::soft_teacher_class_spread(self, &teacher_table2);
         let scost3 = soft_2 * cost::soft_holes_in_teacher_timetable(self, &teacher_table2);
         let scost4 = soft_2 * cost::soft_preferred_subject_times(self, Shift::Second);
+
+        println!("---");
+        println!("Repeating teachers:");
+        cost::hard_repeating_teachers(self, Shift::Second, true);
+        println!("Teacher shift spread:");
+        cost::hard_teacher_shift_spread(self, Shift::Second, true);
+        println!("Subject holes:");
+        cost::hard_subject_holes(self, Shift::Second, true);
 
         println!(
             "SECOND SHIFT ({}, {}):",
@@ -733,6 +755,12 @@ impl Timetable {
         println!("  (s) Teacher class spread: {}", scost2);
         println!("  (s) Teacher holes: {}", scost3);
         println!("  (s) Soft preferred subject times: {}", scost4);
+
+        /*
+        println!("========================");
+        util::teacher_count_per_shift(self);
+        println!("========================");
+        */
     }
 
     pub fn generate_neighbor(&self, shift: Shift, _out: &Sender, static_classes: &String) -> Self {
@@ -873,24 +901,24 @@ impl Timetable {
     }
 
     // Should be 0
-    pub fn hard_points(&self, shift: Shift) -> i32 {
+    pub fn hard_points(&self, shift: Shift, multiplier: i32) -> i32 {
         let mut points = 0;
 
-        points += cost::hard_repeating_teachers(self, shift);
-        points += cost::hard_holes_in_class_timetable(self, shift);
-        points += cost::hard_too_many_subjects_of_same_kind(self, shift);
-        points += cost::hard_block_classes(self, shift);
-        points += cost::hard_specific_subject_days(self, shift);
-        points += cost::hard_subject_per_day_limits(self, shift);
-        points += cost::hard_subject_holes(self, shift);
-        points += cost::hard_teacher_shift_spread(self, shift);
-        points += cost::hard_teacher_extra_constraints(self, shift);
+        points += multiplier * cost::hard_repeating_teachers(self, shift, false);
+        points += 4 * cost::hard_holes_in_class_timetable(self, shift);
+        points += multiplier * cost::hard_too_many_subjects_of_same_kind(self, shift);
+        points += multiplier * cost::hard_block_classes(self, shift);
+        points += multiplier * cost::hard_specific_subject_days(self, shift);
+        points += multiplier * cost::hard_subject_per_day_limits(self, shift);
+        points += multiplier * cost::hard_subject_holes(self, shift, false);
+        points += multiplier * cost::hard_teacher_shift_spread(self, shift, false);
+        points += multiplier * cost::hard_teacher_extra_constraints(self, shift);
 
         points
     }
 
     // Should be as close to 0 as possible
-    pub fn soft_points(&self, shift: Shift) -> i32 {
+    pub fn soft_points(&self, shift: Shift, multiplier: i32) -> i32 {
         let mut points = 0;
 
         let teacher_table = util::class_table_to_teacher_table(
@@ -899,110 +927,281 @@ impl Timetable {
             self.max_periods_per_day,
         );
 
-        points += cost::soft_class_spread(self, shift);
-        points += cost::soft_teacher_class_spread(self, &teacher_table);
-        points += cost::soft_holes_in_teacher_timetable(self, &teacher_table);
-        points += cost::soft_preferred_subject_times(self, shift);
+        points += multiplier * cost::soft_class_spread(self, shift);
+        points += multiplier * cost::soft_teacher_class_spread(self, &teacher_table);
+        points += multiplier * cost::soft_holes_in_teacher_timetable(self, &teacher_table);
+        points += multiplier * cost::soft_preferred_subject_times(self, shift);
 
         points
     }
 
-    pub fn fill_rooms(&mut self) {
-        /*
+    pub fn fill_rooms(&mut self, shift: Shift) {
+        let timetable = self.table(shift).clone();
+
         for period in 0..(self.max_periods_per_day * 5) {
-            let mut used_rooms: Vec<usize> = vec![];
-
-            for class in 0..self.table.len() {
-                match self.table[class].slots[period as usize] {
-                    Slot::Single(slot) => {
-                        match slot {
-                            SlotData::PartiallyFilled { teacher, subject } => {
-                                // Choose room
-                                let mut room = 0;
-
-                                for room_index in 0..self.data.rooms.len() {
-                                    if self.data.rooms[room_index].kind
-                                        == self.data.subjects[subject].kind
-                                        && !used_rooms.contains(&room_index)
-                                    {
-                                        used_rooms.push(room_index);
-                                        room = room_index;
-
-                                        break;
-                                    }
-                                }
-
-                                self.table[class].slots[period as usize] =
-                                    Slot::Single(SlotData::Filled {
-                                        teacher,
-                                        subject,
-                                        room,
-                                    });
-                            }
-
-                            _ => {}
-                        }
+            for class_slots in self.table_mut(shift).iter_mut() {
+                match class_slots.slots[period as usize] {
+                    Slot::Single(SlotData::PartiallyFilled {
+                        teacher, subject, ..
+                    }) => {
+                        class_slots.slots[period as usize] =
+                            Slot::Single(SlotData::PartiallyFilled {
+                                teacher,
+                                subject,
+                                room: None,
+                            });
                     }
-                    Slot::Double { first, second, .. } => {
+                    Slot::Double {
+                        first,
+                        second,
+                        before,
+                        after,
+                    } => {
                         match first {
-                            SlotData::PartiallyFilled { teacher, subject } => {
-                                // Choose room
-                                let mut room = 0;
-
-                                for room_index in 0..self.data.rooms.len() {
-                                    if self.data.rooms[room_index].kind
-                                        == self.data.subjects[subject].kind
-                                        && !used_rooms.contains(&room_index)
-                                    {
-                                        used_rooms.push(room_index);
-                                        room = room_index;
-
-                                        break;
-                                    }
-                                }
-
-                                self.table[class].slots[period as usize] =
-                                    Slot::Single(SlotData::Filled {
+                            SlotData::PartiallyFilled {
+                                teacher, subject, ..
+                            } => {
+                                class_slots.slots[period as usize] = Slot::Double {
+                                    first: SlotData::PartiallyFilled {
                                         teacher,
                                         subject,
-                                        room,
-                                    });
+                                        room: None,
+                                    },
+                                    second,
+                                    before,
+                                    after,
+                                }
                             }
 
                             _ => {}
                         }
 
                         match second {
-                            SlotData::PartiallyFilled { teacher, subject } => {
-                                // Choose room
-                                let mut room = 0;
-
-                                for room_index in 0..self.data.rooms.len() {
-                                    if self.data.rooms[room_index].kind
-                                        == self.data.subjects[subject].kind
-                                        && !used_rooms.contains(&room_index)
-                                    {
-                                        used_rooms.push(room_index);
-                                        room = room_index;
-
-                                        break;
-                                    }
-                                }
-
-                                self.table[class].slots[period as usize] =
-                                    Slot::Single(SlotData::Filled {
+                            SlotData::PartiallyFilled {
+                                teacher, subject, ..
+                            } => {
+                                class_slots.slots[period as usize] = Slot::Double {
+                                    first,
+                                    second: SlotData::PartiallyFilled {
                                         teacher,
                                         subject,
-                                        room,
-                                    });
+                                        room: None,
+                                    },
+                                    before,
+                                    after,
+                                }
                             }
 
                             _ => {}
                         }
                     }
+
+                    _ => {}
                 }
             }
         }
-        */
+
+        for period in 0..(self.max_periods_per_day * 5) {
+            let mut used_rooms: Vec<usize> = vec![];
+
+            for kind in [
+                "masinska",
+                "14",
+                "sd",
+                "sala",
+                "regular",
+                "computer",
+                "14-23",
+                "masinska-14",
+                "masinska-sd",
+                "masinska-computer",
+                "masinska-regular",
+                "masinska-regular-sd",
+            ] {
+                let kind = kind.to_string();
+                println!("KIND: {}", kind);
+
+                let mut c: usize = 0;
+                for class_slots in timetable.iter() {
+                    match class_slots.slots[period as usize] {
+                        Slot::Single(SlotData::PartiallyFilled {
+                            teacher, subject, ..
+                        }) => {
+                            println!(
+                                "  SINGLE: Class[{}], Teacher[{}], Subject[{}], Used[{}]",
+                                self.data.classes[c].name,
+                                self.data.teachers[teacher].name,
+                                self.data.subjects[subject].name,
+                                used_rooms
+                                    .iter()
+                                    .map(|id| self.data.rooms[*id].name.clone())
+                                    .collect::<Vec<String>>()
+                                    .join(", ")
+                            );
+
+                            if self.data.subjects[subject].kind == kind {
+                                let mut found = false;
+                                let mut i: usize = 0;
+                                for room in self.data.rooms.clone() {
+                                    if !used_rooms.contains(&i) && room.kinds.contains(&kind) {
+                                        println!("    ROOM: {}", room.name);
+                                        used_rooms.push(i);
+                                        self.table_mut(shift)[c].slots[period as usize] =
+                                            Slot::Single(SlotData::PartiallyFilled {
+                                                teacher,
+                                                subject,
+                                                room: Some(i),
+                                            });
+                                        found = true;
+                                        break;
+                                    }
+
+                                    i += 1;
+                                }
+
+                                if !found {
+                                    println!("    NO ROOM FOUND");
+                                }
+                            }
+                        }
+
+                        Slot::Double {
+                            first,
+                            second,
+                            before,
+                            after,
+                        } => {
+                            match first {
+                                SlotData::Empty => {}
+                                SlotData::PartiallyFilled {
+                                    teacher, subject, ..
+                                } => {
+                                    println!(
+                                        "  DOUBLE 1: Class[{}], Teacher[{}], Subject[{}], Used[{}]",
+                                        self.data.classes[c].name,
+                                        self.data.teachers[teacher].name,
+                                        self.data.subjects[subject].name,
+                                        used_rooms
+                                            .iter()
+                                            .map(|id| self.data.rooms[*id].name.clone())
+                                            .collect::<Vec<String>>()
+                                            .join(", ")
+                                    );
+
+                                    if self.data.subjects[subject].kind == kind {
+                                        let mut found = false;
+                                        let mut i: usize = 0;
+                                        for room in self.data.rooms.clone() {
+                                            if !used_rooms.contains(&i)
+                                                && room.kinds.contains(&kind)
+                                            {
+                                                println!("    ROOM: {}", room.name);
+                                                used_rooms.push(i);
+
+                                                let new_second = match self.table(shift)[c].slots
+                                                    [period as usize]
+                                                {
+                                                    Slot::Double { second, .. } => second,
+                                                    _ => unreachable!(),
+                                                };
+
+                                                self.table_mut(shift)[c].slots[period as usize] =
+                                                    Slot::Double {
+                                                        first: SlotData::PartiallyFilled {
+                                                            teacher,
+                                                            subject,
+                                                            room: Some(i),
+                                                        },
+                                                        second: new_second,
+                                                        before,
+                                                        after,
+                                                    };
+                                                found = true;
+                                                break;
+                                            }
+
+                                            i += 1;
+                                        }
+
+                                        if !found {
+                                            println!("    NO ROOM FOUND");
+                                        }
+                                    }
+                                }
+                            }
+
+                            match second {
+                                SlotData::Empty => {}
+                                SlotData::PartiallyFilled {
+                                    teacher, subject, ..
+                                } => {
+                                    println!(
+                                        "  DOUBLE 2: Class[{}], Teacher[{}], Subject[{}], Used[{}]",
+                                        self.data.classes[c].name,
+                                        self.data.teachers[teacher].name,
+                                        self.data.subjects[subject].name,
+                                        used_rooms
+                                            .iter()
+                                            .map(|id| self.data.rooms[*id].name.clone())
+                                            .collect::<Vec<String>>()
+                                            .join(", ")
+                                    );
+
+                                    if self.data.subjects[subject].kind == kind {
+                                        let mut found = false;
+                                        let mut i: usize = 0;
+                                        for room in self.data.rooms.clone() {
+                                            if !used_rooms.contains(&i)
+                                                && room.kinds.contains(&kind)
+                                            {
+                                                println!("    ROOM: {}", room.name);
+                                                used_rooms.push(i);
+
+                                                let new_first = match self.table(shift)[c].slots
+                                                    [period as usize]
+                                                {
+                                                    Slot::Double { first, .. } => first,
+                                                    _ => unreachable!(),
+                                                };
+
+                                                self.table_mut(shift)[c].slots[period as usize] =
+                                                    Slot::Double {
+                                                        first: new_first,
+                                                        second: SlotData::PartiallyFilled {
+                                                            teacher,
+                                                            subject,
+                                                            room: Some(i),
+                                                        },
+                                                        before,
+                                                        after,
+                                                    };
+                                                found = true;
+                                                break;
+                                            }
+
+                                            i += 1;
+                                        }
+
+                                        if !found {
+                                            println!("    NO ROOM FOUND");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        _ => {}
+                    }
+
+                    c += 1;
+                }
+            }
+
+            /*
+            if period == 9 {
+                break;
+            }
+            */
+        }
     }
 }

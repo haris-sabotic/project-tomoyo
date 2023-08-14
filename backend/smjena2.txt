@@ -1,0 +1,119 @@
+Total computer: 248
+Total masinska-computer: 0
+
+Shift 2:
+  S3H:
+    sala: 2
+    14: 6
+    regular: 27
+    computer: 4
+  S3G:
+    regular: 21
+    computer: 2
+    masinska-regular: 1
+    masinska: 4
+    sala: 2
+  S3F:
+    regular: 17
+    sala: 2
+    computer: 18
+  S3E:
+    regular: 20
+    computer: 20
+    sala: 2
+  S3D:
+    computer: 18
+    regular: 23
+    sala: 2
+  S3C:
+    regular: 17
+    computer: 20
+    sala: 2
+  S3B:
+    sala: 2
+    computer: 24
+    regular: 18
+  S3A:
+    regular: 18
+    computer: 24
+    sala: 2
+  S1I:
+    computer: 3
+    regular: 22
+    masinska: 3
+    masinska-sd: 2
+    sala: 2
+  S1H:
+    regular: 21
+    computer: 3
+    masinska: 3
+    sala: 2
+    masinska-sd: 2
+  S1G:
+    masinska: 3
+    computer: 8
+    masinska-sd: 4
+    sala: 2
+    regular: 23
+  S1F:
+    masinska: 3
+    computer: 6
+    regular: 23
+    masinska-sd: 4
+    sala: 2
+  S1E:
+    masinska-sd: 4
+    regular: 23
+    computer: 6
+    masinska: 3
+    sala: 2
+  S1D:
+    regular: 20
+    computer: 20
+    sala: 2
+  S1C:
+    computer: 20
+    regular: 23
+    sala: 2
+  S1B:
+    sala: 2
+    computer: 20
+    regular: 20
+  S1A:
+    regular: 20
+    sala: 2
+    computer: 20
+  E1A:
+    masinska-sd: 4
+    masinka: 4
+    sala: 2
+    sd: 2
+    regular: 23
+    computer: 4
+  E3A:
+    sala: 2
+    regular: 22
+  R1A:
+    masinska: 4
+    computer: 4
+    regular: 22
+    sala: 2
+    masinska-sd: 2
+    masinka: 4
+  R1B:
+    regular: 20
+    computer: 4
+    sala: 2
+    masinska: 8
+    masinska-sd: 4
+  R3A:
+    masinska: 18
+    sala: 2
+    masinska-sd: 4
+    regular: 10
+  R3B:
+    masinska-regular: 2
+    masinska: 21
+    sala: 2
+    regular: 12
+
