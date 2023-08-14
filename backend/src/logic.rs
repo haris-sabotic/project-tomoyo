@@ -551,7 +551,6 @@ impl Timetable {
 
             while running.load(Ordering::Relaxed) {
                 for _ in 0..sa_max {
-                    /*
                     let new_s1 = s1.generate_neighbor(Shift::First, out, static_classes);
                     // let new_s2 = s2.generate_neighbor(Shift::Second, out, static_classes);
 
@@ -593,9 +592,8 @@ impl Timetable {
                             updated1 = true;
                         }
                     }
-                    */
                     // ================
-
+                    /*
                     let new_s2 = s2.generate_neighbor(Shift::Second, out, static_classes);
 
                     let new_s2_cost_hard = new_s2.hard_points(Shift::Second, hard_2);
@@ -626,33 +624,34 @@ impl Timetable {
                             updated2 = true;
                         }
                     }
+                    */
                     // ================
 
-                    if
-                    /*updated1 ||*/
-                    updated2 {
-                        /*
+                    if updated1
+                    /*|| updated2*/
+                    {
                         let (hard1, soft1) = if updated1 {
                             (new_s1_cost_hard, new_s1_cost_soft)
                         } else {
                             (s1_cost_hard, s1_cost_soft)
                         };
-                        */
+                        /*
                         let (hard2, soft2) = if updated2 {
                             (new_s2_cost_hard, new_s2_cost_soft)
                         } else {
                             (s2_cost_hard, s2_cost_soft)
                         };
+                        */
 
                         println!(
                             // "[TEMP: {}] [{: >3}]   [{: >3}, {: >3}]    [{: >3}, {: >3}]",
                             "[TEMP: {}]    [{: >3}, {: >3}]",
                             t,
                             // new_s_cost_shifts,
-                            // hard1,
-                            // soft1,
-                            hard2,
-                            soft2,
+                            hard1,
+                            soft1,
+                            // hard2,
+                            // soft2,
                         );
                     }
                 }
