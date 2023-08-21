@@ -547,17 +547,22 @@ impl Timetable {
             while running.load(Ordering::Relaxed) {
                 for _ in 0..sa_max {
                     let new_s1 = s1.generate_neighbor(Shift::First, out, static_classes);
-                    // let new_s2 = s2.generate_neighbor(Shift::Second, out, static_classes);
+                    let new_s2 = s2.generate_neighbor(Shift::Second, out, static_classes);
 
-                    /*
                     let new_s_cost_shifts = cost::teacher_shifts(
                         &new_s1.table1,
                         &new_s2.table2,
                         self.max_periods_per_day,
+                        &self.data,
+                        false,
                     );
-                    let s_cost_shifts =
-                        cost::teacher_shifts(&s1.table1, &s2.table2, self.max_periods_per_day);
-                    */
+                    let s_cost_shifts = cost::teacher_shifts(
+                        &s1.table1,
+                        &s2.table2,
+                        self.max_periods_per_day,
+                        &self.data,
+                        false,
+                    );
 
                     let new_s1_cost_hard = new_s1.hard_points(Shift::First, hard_1);
                     let s1_cost_hard = s1.hard_points(Shift::First, hard_1);
@@ -565,8 +570,8 @@ impl Timetable {
                     let new_s1_cost_soft = new_s1.soft_points(Shift::First, soft_1);
                     let s1_cost_soft = s1.soft_points(Shift::First, soft_1);
 
-                    let new_s1_cost = new_s1_cost_hard + new_s1_cost_soft /* + new_s_cost_shifts*/;
-                    let s1_cost = s1_cost_hard + s1_cost_soft /* + s_cost_shifts*/;
+                    let new_s1_cost = new_s1_cost_hard + new_s1_cost_soft + new_s_cost_shifts;
+                    let s1_cost = s1_cost_hard + s1_cost_soft + s_cost_shifts;
 
                     let delta1 = new_s1_cost - s1_cost;
 
@@ -588,8 +593,7 @@ impl Timetable {
                         }
                     }
                     // ================
-                    /*
-                    let new_s2 = s2.generate_neighbor(Shift::Second, out, static_classes);
+                    //let new_s2 = s2.generate_neighbor(Shift::Second, out, static_classes);
 
                     let new_s2_cost_hard = new_s2.hard_points(Shift::Second, hard_2);
                     let s2_cost_hard = s2.hard_points(Shift::Second, hard_2);
@@ -597,8 +601,8 @@ impl Timetable {
                     let new_s2_cost_soft = new_s2.soft_points(Shift::Second, soft_2);
                     let s2_cost_soft = s2.soft_points(Shift::Second, soft_2);
 
-                    let new_s2_cost = new_s2_cost_hard + new_s2_cost_soft /* + new_s_cost_shifts*/;
-                    let s2_cost = s2_cost_hard + s2_cost_soft /* + s_cost_shifts*/;
+                    let new_s2_cost = new_s2_cost_hard + new_s2_cost_soft + new_s_cost_shifts;
+                    let s2_cost = s2_cost_hard + s2_cost_soft + s_cost_shifts;
 
                     let delta2 = new_s2_cost - s2_cost;
 
@@ -619,34 +623,29 @@ impl Timetable {
                             updated2 = true;
                         }
                     }
-                    */
                     // ================
 
-                    if updated1
-                    /*||  updated2 */
-                    {
+                    if updated1 || updated2 {
                         let (hard1, soft1) = if updated1 {
                             (new_s1_cost_hard, new_s1_cost_soft)
                         } else {
                             (s1_cost_hard, s1_cost_soft)
                         };
-                        /*
                         let (hard2, soft2) = if updated2 {
                             (new_s2_cost_hard, new_s2_cost_soft)
                         } else {
                             (s2_cost_hard, s2_cost_soft)
                         };
-                        */
 
                         println!(
-                            // "[TEMP: {}] [{: >3}]   [{: >3}, {: >3}]    [{: >3}, {: >3}]",
-                            "[TEMP: {}]    [{: >3}, {: >3}]",
+                            "[TEMP: {}] [{: >3}]   [{: >3}, {: >3}]    [{: >3}, {: >3}]",
+                            //"[TEMP: {}]    [{: >3}, {: >3}]",
                             t,
-                            // new_s_cost_shifts,
+                            new_s_cost_shifts,
                             hard1,
                             soft1,
-                            //hard2,
-                            //soft2,
+                            hard2,
+                            soft2,
                         );
                     }
                 }
@@ -675,7 +674,7 @@ impl Timetable {
         */
 
         let hcost1 = hard_1 * cost::hard_repeating_teachers(self, Shift::First, false);
-        let hcost2 = 4 * cost::hard_holes_in_class_timetable(self, Shift::First);
+        let hcost2 = hard_1 * cost::hard_holes_in_class_timetable(self, Shift::First);
         let hcost3 = hard_1 * cost::hard_too_many_subjects_of_same_kind(self, Shift::First);
         let hcost4 = hard_1 * cost::hard_block_classes(self, Shift::First);
         let hcost5 = hard_1 * cost::hard_specific_subject_days(self, Shift::First);
@@ -719,7 +718,7 @@ impl Timetable {
         println!("  (s) Soft preferred subject times: {}", scost4);
 
         let hcost1 = hard_2 * cost::hard_repeating_teachers(self, Shift::Second, false);
-        let hcost2 = 4 * cost::hard_holes_in_class_timetable(self, Shift::Second);
+        let hcost2 = hard_2 * cost::hard_holes_in_class_timetable(self, Shift::Second);
         let hcost3 = hard_2 * cost::hard_too_many_subjects_of_same_kind(self, Shift::Second);
         let hcost4 = hard_2 * cost::hard_block_classes(self, Shift::Second);
         let hcost5 = hard_2 * cost::hard_specific_subject_days(self, Shift::Second);
@@ -916,7 +915,7 @@ impl Timetable {
         let mut points = 0;
 
         points += multiplier * cost::hard_repeating_teachers(self, shift, false);
-        points += 4 * cost::hard_holes_in_class_timetable(self, shift);
+        points += multiplier * cost::hard_holes_in_class_timetable(self, shift);
         points += multiplier * cost::hard_too_many_subjects_of_same_kind(self, shift);
         points += multiplier * cost::hard_block_classes(self, shift);
         points += multiplier * cost::hard_specific_subject_days(self, shift);

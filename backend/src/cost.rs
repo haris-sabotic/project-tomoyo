@@ -425,6 +425,7 @@ pub fn hard_block_classes(timetable: &Timetable, shift: Shift) -> i32 {
 
 pub fn hard_specific_subject_days(timetable: &Timetable, shift: Shift) -> i32 {
     let mut points = 0;
+    /*
 
     let subjects = vec![67, 66, 65, 64, 63, 62, 61, 60, 59, 58];
     let classes = vec![7, 6, 5, 15, 14, 13];
@@ -460,6 +461,7 @@ pub fn hard_specific_subject_days(timetable: &Timetable, shift: Shift) -> i32 {
         }
     }
 
+    */
     points
 }
 
@@ -557,6 +559,7 @@ pub fn hard_subject_holes(timetable: &Timetable, shift: Shift, debug: bool) -> i
 
 pub fn hard_teacher_shift_spread(timetable: &Timetable, shift: Shift, debug: bool) -> i32 {
     let mut points = 0;
+    /*
     let teacher_spread: HashMap<&str, [i32; 5]> = HashMap::from([
         ("Stanisic Milanka", [1, 1, 2, 2, 2]),
         ("Knezevic Svetlana", [2, 2, 2, 1, 1]),
@@ -593,7 +596,7 @@ pub fn hard_teacher_shift_spread(timetable: &Timetable, shift: Shift, debug: boo
         //
         ("Samardzic Rada", [1, 2, 2, 1, 1]),
         ("Vratnica Mladen", [1, 1, 2, 2, 2]),
-        ("Pekovic Milijana", [1, 2, 1, 2, 2]),
+        //("Pekovic Milijana", [1, 2, 1, 2, 2]),
         ("Zekovic Jelena", [1, 1, 2, 2, 2]),
         ("Vojinovic Nikolija", [2, 2, 2, 1, 1]),
         ("Dasic Nada", [1, 2, 2, 1, 2]),
@@ -686,6 +689,7 @@ pub fn hard_teacher_shift_spread(timetable: &Timetable, shift: Shift, debug: boo
             }
         }
     }
+    */
     points
 }
 
@@ -755,6 +759,7 @@ pub fn hard_teacher_extra_constraints(timetable: &Timetable, shift: Shift) -> i3
 /// Increment points by 1 for each day in a class timetable that contains more periods than what's ideal (even spread)
 pub fn soft_class_spread(timetable: &Timetable, shift: Shift) -> i32 {
     let mut points = 0;
+    /*
 
     for class_slots in timetable.table(shift).iter() {
         // total number of classes in a week
@@ -845,12 +850,14 @@ pub fn soft_class_spread(timetable: &Timetable, shift: Shift) -> i32 {
         }
     }
 
+    */
     points
 }
 
 /// Same as `soft_class_spread` except for teachers instead of classes
 pub fn soft_teacher_class_spread(timetable: &Timetable, teacher_table: &Vec<TeacherSlots>) -> i32 {
     let mut points = 0;
+    /*
 
     for slots in teacher_table.iter() {
         let mut count = 0;
@@ -870,6 +877,7 @@ pub fn soft_teacher_class_spread(timetable: &Timetable, teacher_table: &Vec<Teac
         // ideal number of classes per day
         // let ideal_spread = (count as f32 / 5.0).ceil() as i32;
 
+        let mut one_day_with6 = false;
         for day in 0..5 {
             // calculate number of classes during this day
             let mut day_class_count = 0;
@@ -885,12 +893,23 @@ pub fn soft_teacher_class_spread(timetable: &Timetable, teacher_table: &Vec<Teac
                 }
             }
 
+            /*
             if day_class_count == 1 {
                 points += 1;
             }
+            */
+            if day_class_count >= 6 {
+                one_day_with6 = true;
+                break;
+            }
+        }
+
+        if !one_day_with6 {
+            points += 2;
         }
     }
 
+    */
     points
 }
 
@@ -939,7 +958,7 @@ pub fn soft_holes_in_teacher_timetable(
                 }
             }
 
-            if holes >= 1 {
+            if holes > 1 {
                 points += 1;
             }
         }
@@ -950,6 +969,7 @@ pub fn soft_holes_in_teacher_timetable(
 
 pub fn soft_preferred_subject_times(timetable: &Timetable, shift: Shift) -> i32 {
     let mut points = 0;
+    /*
 
     for class_slots in timetable.table(shift).iter() {
         for day in 0..5 {
@@ -995,6 +1015,7 @@ pub fn soft_preferred_subject_times(timetable: &Timetable, shift: Shift) -> i32 
         }
     }
 
+    */
     points
 }
 
@@ -1071,7 +1092,7 @@ pub fn teacher_shifts(
 
         for t in teachers_seen_in_shift1.keys() {
             if teachers_seen_in_shift2.contains_key(t) {
-                points += 1;
+                points += 2;
 
                 if debug {
                     let days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
