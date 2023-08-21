@@ -1,5 +1,6 @@
 <script>
     import TimetableAllClasses from "./TimetableAllClasses.svelte";
+    import TimetableAllClassesWeekly from "./TimetableAllClassesWeekly.svelte";
     import TimetableAllTeachers from "./TimetableAllTeachers.svelte";
     import TimetableClass from "./TimetableClass.svelte";
     import {
@@ -159,6 +160,7 @@
 <br>
 <select bind:value={selectedView} on:change={() => {}}>
     <option value="all-classes">ALL CLASSES</option>
+    <option value="all-classes-weekly">ALL CLASSES WEEKLY</option>
     <option value="all-teachers">ALL TEACHERS</option>
 
     {#each classes as c, key}
@@ -268,6 +270,14 @@
 
     {#if selectedView == "all-classes"}
         <TimetableAllClasses
+            {timetable}
+            {classes}
+            {subjects}
+            {teachers}
+            {rooms}
+        />
+    {:else if selectedView == "all-classes-weekly"}
+        <TimetableAllClassesWeekly
             {timetable}
             {classes}
             {subjects}

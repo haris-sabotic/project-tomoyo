@@ -6,19 +6,20 @@
     export let teachers;
     export let rooms;
     export let max_periods_per_day;
-    
+
     export let selected;
     export let onClick;
 
     $: htmlClass = () => {
-        let result = ""
+        let result = "";
 
         if (day_separators) {
-            result += slot_index % max_periods_per_day == 0
-                ? "day-begin"
-                : (slot_index + 1) % max_periods_per_day == 0
-                ? "day-end"
-                : "";
+            result +=
+                slot_index % max_periods_per_day == 0
+                    ? "day-begin"
+                    : (slot_index + 1) % max_periods_per_day == 0
+                    ? "day-end"
+                    : "";
         }
 
         if (selected) {
@@ -26,42 +27,42 @@
         }
 
         return result;
-    }
+    };
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 {#if slot["Single"]}
     {#if slot["Single"]["PartiallyFilled"]}
         <td class={htmlClass()} on:click={onClick}>
-            <div class="content">
+            <div class="content {(slot["Single"]["PartiallyFilled"].room != null) ? "" : " no-room"}">
                 <p class="subject">
                     {subjects[slot["Single"]["PartiallyFilled"].subject].name}
                 </p>
                 <p class="teacher">
                     {teachers[slot["Single"]["PartiallyFilled"].teacher]}
                 </p>
-            </div>
-        </td>
-    {:else if slot["Single"]["Filled"]}
-        <td class={htmlClass()} on:click={onClick}>
-            <div class="content">
-                <p class="subject">
-                    {subjects[slot["Single"]["Filled"].subject].name}
-                </p>
-                <p class="teacher">
-                    {teachers[slot["Single"]["Filled"].teacher]}
-                </p>
-                <p class="room">{rooms[slot["Single"]["Filled"].room].name}</p>
+                {#if slot["Single"]["PartiallyFilled"].room != null}
+                    <p class="room">
+                        {rooms[slot["Single"]["PartiallyFilled"].room].name}
+                    </p>
+                {:else}
+                    <p>NO ROOM</p>
+                {/if}
             </div>
         </td>
     {:else}
-        <td class={htmlClass()} on:click={onClick}></td>
+        <td class={htmlClass()} on:click={onClick} />
     {/if}
 {:else}
-    <td class="split {htmlClass()} before-{slot["Double"]["before"]} after-{slot["Double"]["after"]}" on:click={onClick}>
+    <td
+        class="split {htmlClass()} before-{slot['Double'][
+            'before'
+        ]} after-{slot['Double']['after']}"
+        on:click={onClick}
+    >
         <div class="split-content">
             {#if slot["Double"]["first"]["PartiallyFilled"]}
-                <div class="content">
+                <div class="content {(slot["Double"]["first"]["PartiallyFilled"].room != null) ? "" : " no-room"}">
                     <p class="subject">
                         {subjects[
                             slot["Double"]["first"]["PartiallyFilled"].subject
@@ -72,26 +73,22 @@
                             slot["Double"]["first"]["PartiallyFilled"].teacher
                         ]}
                     </p>
-                </div>
-            {:else if slot["Double"]["first"]["Filled"]}
-                <div class="content">
-                    <p class="subject">
-                        {subjects[slot["Double"]["first"]["Filled"].subject]
-                            .name}
-                    </p>
-                    <p class="teacher">
-                        {teachers[slot["Double"]["first"]["Filled"].teacher]}
-                    </p>
-                    <p class="room">
-                        {rooms[slot["Double"]["first"]["Filled"].room].name}
-                    </p>
+                    {#if slot["Double"]["first"]["PartiallyFilled"].room != null}
+                        <p class="room">
+                            {rooms[
+                                slot["Double"]["first"]["PartiallyFilled"].room
+                            ].name}
+                        </p>
+                    {:else}
+                        <p>NO ROOM</p>
+                    {/if}
                 </div>
             {:else}
-                <p></p>
+                <p />
             {/if}
 
             {#if slot["Double"]["second"]["PartiallyFilled"]}
-                <div class="content">
+                <div class="content {(slot["Double"]["second"]["PartiallyFilled"].room != null) ? "" : " no-room"}">
                     <p class="subject">
                         {subjects[
                             slot["Double"]["second"]["PartiallyFilled"].subject
@@ -102,28 +99,28 @@
                             slot["Double"]["second"]["PartiallyFilled"].teacher
                         ]}
                     </p>
-                </div>
-            {:else if slot["Double"]["second"]["Filled"]}
-                <div class="content">
-                    <p class="subject">
-                        {subjects[slot["Double"]["second"]["Filled"].subject]
-                            .name}
-                    </p>
-                    <p class="teacher">
-                        {teachers[slot["Double"]["second"]["Filled"].teacher]}
-                    </p>
-                    <p class="room">
-                        {rooms[slot["Double"]["second"]["Filled"].room].name}
-                    </p>
+                    {#if slot["Double"]["second"]["PartiallyFilled"].room != null}
+                        <p class="room">
+                            {rooms[
+                                slot["Double"]["second"]["PartiallyFilled"].room
+                            ].name}
+                        </p>
+                    {:else}
+                        <p>NO ROOM</p>
+                    {/if}
                 </div>
             {:else}
-                <p></p>
+                <p />
             {/if}
         </div>
     </td>
 {/if}
 
 <style>
+    .no-room {
+        background-color: lightblue;
+    }
+
     td {
         border: 1px solid black;
         margin: 0;
@@ -133,7 +130,7 @@
     td:hover {
         background-color: rgb(230, 230, 230);
     }
-    
+
     .selected {
         background-color: rgb(200, 200, 200) !important;
     }
@@ -154,18 +151,18 @@
         grid-template-rows: 1fr 1fr;
     }
 
-    .split-content>* {
+    .split-content > * {
         margin: 0;
         padding: 10px;
     }
-    
-    .split-content>p {
+
+    .split-content > p {
         display: flex;
         justify-content: center;
         align-items: center;
     }
-    
-    .split-content>*:first-child {
+
+    .split-content > *:first-child {
         border-bottom: 1px solid gray;
     }
 

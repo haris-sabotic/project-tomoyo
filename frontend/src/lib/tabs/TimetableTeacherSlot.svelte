@@ -29,22 +29,15 @@
             <p class="class">
                 {classes[slot["PartiallyFilled"].class]}
             </p>
-        </div>
-    </td>
-{:else if slot["Filled"]}
-    <td class={htmlClass()}>
-        <div class="content">
-            <p class="subject">
-                {subjects[slot["Filled"].subject].name}
-            </p>
-            <p class="class">
-                {classes[slot["Filled"].class]}
-            </p>
-            <p class="room">{rooms[slot["Filled"].room].name}</p>
+            {#if slot["PartiallyFilled"].room != null}
+                <p class="room">{rooms[slot["PartiallyFilled"].room].name}</p>
+            {:else}
+                <p class="room">NO ROOM</p>
+            {/if}
         </div>
     </td>
 {:else}
-    <td class="{htmlClass()} empty"></td>
+    <td class="{htmlClass()} empty">{((slot_index + 1) % max_periods_per_day) == 0 ? 7 : ((slot_index + 1) % max_periods_per_day)}</td>
 {/if}
 
 <style>
@@ -52,10 +45,6 @@
         border: 1px solid black;
         margin: 0;
         padding: 10px;
-    }
-
-    .empty {
-        background-color: lightsteelblue;
     }
 
     .content {
@@ -86,5 +75,11 @@
     }
     .day-end {
         border-right: 5px solid red;
+    }
+
+    .empty {
+        background-color: lightcoral;
+        font-size: 2em;
+        font-weight: bold;
     }
 </style>

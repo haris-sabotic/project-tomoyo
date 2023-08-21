@@ -11,6 +11,10 @@
     let selectedClass = null;
     let selectedSlot = null;
 
+    let selectedRoom = null;
+    let selectedGroup = "single";
+    let selectedSwapSlots = "single";
+
     let onClassSlotClick = (shift, class_index, slot_index) => {
         if (selectedClass == null) {
             selectedShift = shift;
@@ -20,17 +24,77 @@
             // only swap if it's 2 slots within the same class
             if (selectedClass == class_index) {
                 if (shift == 1) {
-                    let tmp =
-                        timetable.table1[selectedClass].slots[selectedSlot];
-                    timetable.table1[selectedClass].slots[selectedSlot] =
-                        timetable.table1[class_index].slots[slot_index];
-                    timetable.table1[class_index].slots[slot_index] = tmp;
+                    if (selectedSwapSlots == "single") {
+                        let tmp =
+                            timetable.table1[selectedClass].slots[selectedSlot];
+                        timetable.table1[selectedClass].slots[selectedSlot] =
+                            timetable.table1[class_index].slots[slot_index];
+                        timetable.table1[class_index].slots[slot_index] = tmp;
+                    } else if (selectedSwapSlots == "first") {
+                        let tmp =
+                            timetable.table1[selectedClass].slots[selectedSlot][
+                                "Double"
+                            ]["first"];
+                        timetable.table1[selectedClass].slots[selectedSlot][
+                            "Double"
+                        ]["first"] =
+                            timetable.table1[class_index].slots[slot_index][
+                                "Double"
+                            ]["first"];
+                        timetable.table1[class_index].slots[slot_index][
+                            "Double"
+                        ]["first"] = tmp;
+                    } else if (selectedSwapSlots == "second") {
+                        let tmp =
+                            timetable.table1[selectedClass].slots[selectedSlot][
+                                "Double"
+                            ]["second"];
+                        timetable.table1[selectedClass].slots[selectedSlot][
+                            "Double"
+                        ]["second"] =
+                            timetable.table1[class_index].slots[slot_index][
+                                "Double"
+                            ]["second"];
+                        timetable.table1[class_index].slots[slot_index][
+                            "Double"
+                        ]["second"] = tmp;
+                    }
                 } else if (shift == 2) {
-                    let tmp =
-                        timetable.table2[selectedClass].slots[selectedSlot];
-                    timetable.table2[selectedClass].slots[selectedSlot] =
-                        timetable.table2[class_index].slots[slot_index];
-                    timetable.table2[class_index].slots[slot_index] = tmp;
+                    if (selectedSwapSlots == "single") {
+                        let tmp =
+                            timetable.table2[selectedClass].slots[selectedSlot];
+                        timetable.table2[selectedClass].slots[selectedSlot] =
+                            timetable.table2[class_index].slots[slot_index];
+                        timetable.table2[class_index].slots[slot_index] = tmp;
+                    } else if (selectedSwapSlots == "first") {
+                        let tmp =
+                            timetable.table2[selectedClass].slots[selectedSlot][
+                                "Double"
+                            ]["first"];
+                        timetable.table2[selectedClass].slots[selectedSlot][
+                            "Double"
+                        ]["first"] =
+                            timetable.table2[class_index].slots[slot_index][
+                                "Double"
+                            ]["first"];
+                        timetable.table2[class_index].slots[slot_index][
+                            "Double"
+                        ]["first"] = tmp;
+                    } else if (selectedSwapSlots == "second") {
+                        let tmp =
+                            timetable.table2[selectedClass].slots[selectedSlot][
+                                "Double"
+                            ]["second"];
+                        timetable.table2[selectedClass].slots[selectedSlot][
+                            "Double"
+                        ]["second"] =
+                            timetable.table2[class_index].slots[slot_index][
+                                "Double"
+                            ]["second"];
+                        timetable.table2[class_index].slots[slot_index][
+                            "Double"
+                        ]["second"] = tmp;
+                    }
                 }
             }
 
@@ -39,7 +103,106 @@
             selectedSlot = null;
         }
     };
+
+    let handleChangeRoom = (group) => {
+        if (selectedClass != null && selectedRoom != null) {
+            if (selectedShift == 1) {
+                if (selectedGroup == "single") {
+                    timetable.table1[selectedClass].slots[selectedSlot][
+                        "Single"
+                    ]["PartiallyFilled"].room = selectedRoom;
+                } else if (selectedGroup == "first") {
+                    timetable.table1[selectedClass].slots[selectedSlot][
+                        "Double"
+                    ]["first"]["PartiallyFilled"].room = selectedRoom;
+                } else if (selectedGroup == "second") {
+                    timetable.table1[selectedClass].slots[selectedSlot][
+                        "Double"
+                    ]["second"]["PartiallyFilled"].room = selectedRoom;
+                }
+            } else if (selectedShift == 2) {
+                if (selectedGroup == "single") {
+                    timetable.table2[selectedClass].slots[selectedSlot][
+                        "Single"
+                    ]["PartiallyFilled"].room = selectedRoom;
+                } else if (selectedGroup == "first") {
+                    timetable.table2[selectedClass].slots[selectedSlot][
+                        "Double"
+                    ]["first"]["PartiallyFilled"].room = selectedRoom;
+                } else if (selectedGroup == "second") {
+                    timetable.table2[selectedClass].slots[selectedSlot][
+                        "Double"
+                    ]["second"]["PartiallyFilled"].room = selectedRoom;
+                }
+            }
+        }
+    };
+
+    let handleSwitchGroups = () => {
+        if (selectedShift == 1) {
+            let tmp =
+                timetable.table1[selectedClass].slots[selectedSlot]["Double"][
+                    "first"
+                ];
+            timetable.table1[selectedClass].slots[selectedSlot]["Double"][
+                "first"
+            ] =
+                timetable.table1[selectedClass].slots[selectedSlot]["Double"][
+                    "second"
+                ];
+            timetable.table1[selectedClass].slots[selectedSlot]["Double"][
+                "second"
+            ] = tmp;
+        } else if (selectedShift == 2) {
+            let tmp =
+                timetable.table2[selectedClass].slots[selectedSlot]["Double"][
+                    "first"
+                ];
+            timetable.table2[selectedClass].slots[selectedSlot]["Double"][
+                "first"
+            ] =
+                timetable.table2[selectedClass].slots[selectedSlot]["Double"][
+                    "second"
+                ];
+            timetable.table2[selectedClass].slots[selectedSlot]["Double"][
+                "second"
+            ] = tmp;
+        }
+    };
 </script>
+
+<div class="table-controls">
+    <div class="change-room">
+        <p>Change room:</p>
+        <select bind:value={selectedRoom}>
+            {#each rooms as room, room_id}
+                <option value={room_id}>
+                    {room.name}
+                </option>
+            {/each}
+        </select>
+        <select bind:value={selectedGroup}>
+            <option value="single">Single</option>
+            <option value="first">First</option>
+            <option value="second">Second</option>
+        </select>
+        <button on:click={handleChangeRoom}>OK</button>
+    </div>
+
+    <div class="swap-slots">
+        <p>Swap slots:</p>
+        <select bind:value={selectedSwapSlots}>
+            <option value="single">Single</option>
+            <option value="first">First</option>
+            <option value="second">Second</option>
+        </select>
+    </div>
+
+    <div class="switch-groups">
+        <p>Switch groups:</p>
+        <button on:click={handleSwitchGroups}>OK</button>
+    </div>
+</div>
 
 <h1>FIRST SHIFT</h1>
 
@@ -167,5 +330,12 @@
     }
     .day-end {
         border-right: 5px solid red;
+    }
+
+    .table-controls {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 200px;
     }
 </style>

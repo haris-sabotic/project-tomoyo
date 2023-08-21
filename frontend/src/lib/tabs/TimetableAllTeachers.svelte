@@ -17,7 +17,7 @@
         for (let j = 0; j < 5 * timetable.max_periods_per_day; j++) {
             slots1.push("Empty");
         }
-        
+
         let slots2 = [];
         for (let j = 0; j < 5 * timetable.max_periods_per_day; j++) {
             slots2.push("Empty");
@@ -27,7 +27,7 @@
             teacher_index: i,
             slots: slots1,
         });
-        
+
         teachers_timetable2.push({
             teacher_index: i,
             slots: slots2,
@@ -45,20 +45,10 @@
                 if (slot["Single"]["PartiallyFilled"]) {
                     let teacher = slot["Single"]["PartiallyFilled"].teacher;
                     let subject = slot["Single"]["PartiallyFilled"].subject;
+                    let room = slot["Single"]["PartiallyFilled"].room;
 
                     teachers_timetable1[teacher].slots[i] = {
                         PartiallyFilled: {
-                            subject: subject,
-                            class: class_index,
-                        },
-                    };
-                } else if (slot["Single"]["Filled"]) {
-                    let teacher = slot["Single"]["Filled"].teacher;
-                    let subject = slot["Single"]["Filled"].subject;
-                    let room = slot["Single"]["Filled"].room;
-
-                    teachers_timetable1[teacher].slots[i] = {
-                        Filled: {
                             subject: subject,
                             class: class_index,
                             room: room,
@@ -72,47 +62,26 @@
                         slot["Double"]["first"]["PartiallyFilled"].teacher;
                     let subject =
                         slot["Double"]["first"]["PartiallyFilled"].subject;
+                    let room = slot["Double"]["first"]["PartiallyFilled"].room;
 
                     teachers_timetable1[teacher].slots[i] = {
                         PartiallyFilled: {
-                            subject: subject,
-                            class: class_index,
-                        },
-                    };
-                } else if (slot["Double"]["first"]["Filled"]) {
-                    let teacher = slot["Double"]["first"]["Filled"].teacher;
-                    let subject = slot["Double"]["first"]["Filled"].subject;
-                    let room = slot["Double"]["first"]["Filled"].room;
-
-                    teachers_timetable1[teacher].slots[i] = {
-                        Filled: {
                             subject: subject,
                             class: class_index,
                             room: room,
                         },
                     };
                 }
-
                 // second
                 if (slot["Double"]["second"]["PartiallyFilled"]) {
                     let teacher =
                         slot["Double"]["second"]["PartiallyFilled"].teacher;
                     let subject =
                         slot["Double"]["second"]["PartiallyFilled"].subject;
+                    let room = slot["Double"]["second"]["PartiallyFilled"].room;
 
                     teachers_timetable1[teacher].slots[i] = {
                         PartiallyFilled: {
-                            subject: subject,
-                            class: class_index,
-                        },
-                    };
-                } else if (slot["Double"]["second"]["Filled"]) {
-                    let teacher = slot["Double"]["second"]["Filled"].teacher;
-                    let subject = slot["Double"]["second"]["Filled"].subject;
-                    let room = slot["Double"]["second"]["Filled"].room;
-
-                    teachers_timetable1[teacher].slots[i] = {
-                        Filled: {
                             subject: subject,
                             class: class_index,
                             room: room,
@@ -122,7 +91,7 @@
             }
         }
     });
-    
+
     timetable.table2.forEach((el) => {
         let class_index = el.class_index;
         let slots = el.slots;
@@ -134,20 +103,10 @@
                 if (slot["Single"]["PartiallyFilled"]) {
                     let teacher = slot["Single"]["PartiallyFilled"].teacher;
                     let subject = slot["Single"]["PartiallyFilled"].subject;
+                    let room = slot["Single"]["PartiallyFilled"].room;
 
                     teachers_timetable2[teacher].slots[i] = {
                         PartiallyFilled: {
-                            subject: subject,
-                            class: class_index,
-                        },
-                    };
-                } else if (slot["Single"]["Filled"]) {
-                    let teacher = slot["Single"]["Filled"].teacher;
-                    let subject = slot["Single"]["Filled"].subject;
-                    let room = slot["Single"]["Filled"].room;
-
-                    teachers_timetable2[teacher].slots[i] = {
-                        Filled: {
                             subject: subject,
                             class: class_index,
                             room: room,
@@ -161,20 +120,10 @@
                         slot["Double"]["first"]["PartiallyFilled"].teacher;
                     let subject =
                         slot["Double"]["first"]["PartiallyFilled"].subject;
+                    let room = slot["Double"]["first"]["PartiallyFilled"].room;
 
                     teachers_timetable2[teacher].slots[i] = {
                         PartiallyFilled: {
-                            subject: subject,
-                            class: class_index,
-                        },
-                    };
-                } else if (slot["Double"]["first"]["Filled"]) {
-                    let teacher = slot["Double"]["first"]["Filled"].teacher;
-                    let subject = slot["Double"]["first"]["Filled"].subject;
-                    let room = slot["Double"]["first"]["Filled"].room;
-
-                    teachers_timetable2[teacher].slots[i] = {
-                        Filled: {
                             subject: subject,
                             class: class_index,
                             room: room,
@@ -188,20 +137,10 @@
                         slot["Double"]["second"]["PartiallyFilled"].teacher;
                     let subject =
                         slot["Double"]["second"]["PartiallyFilled"].subject;
+                    let room = slot["Double"]["second"]["PartiallyFilled"].room;
 
                     teachers_timetable2[teacher].slots[i] = {
                         PartiallyFilled: {
-                            subject: subject,
-                            class: class_index,
-                        },
-                    };
-                } else if (slot["Double"]["second"]["Filled"]) {
-                    let teacher = slot["Double"]["second"]["Filled"].teacher;
-                    let subject = slot["Double"]["second"]["Filled"].subject;
-                    let room = slot["Double"]["second"]["Filled"].room;
-
-                    teachers_timetable2[teacher].slots[i] = {
-                        Filled: {
                             subject: subject,
                             class: class_index,
                             room: room,
