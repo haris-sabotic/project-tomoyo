@@ -199,11 +199,6 @@ impl Timetable {
 
             println!("Moving on to double relations...");
 
-            if c == 34 {
-                c += 1;
-                continue;
-            }
-
             // Sort leftover double relations
             leftover_doubles
                 .sort_by(|a, b| a.per_week_first.partial_cmp(&b.per_week_first).unwrap());
@@ -628,7 +623,7 @@ impl Timetable {
                     // ================
 
                     if updated1
-                    /*|| updated2*/
+                    /*||  updated2 */
                     {
                         let (hard1, soft1) = if updated1 {
                             (new_s1_cost_hard, new_s1_cost_soft)
@@ -650,8 +645,8 @@ impl Timetable {
                             // new_s_cost_shifts,
                             hard1,
                             soft1,
-                            // hard2,
-                            // soft2,
+                            //hard2,
+                            //soft2,
                         );
                     }
                 }
@@ -694,6 +689,16 @@ impl Timetable {
         let scost3 = soft_1 * cost::soft_holes_in_teacher_timetable(self, &teacher_table1);
         let scost4 = soft_1 * cost::soft_preferred_subject_times(self, Shift::First);
 
+        println!("---");
+        println!("Repeating teachers:");
+        cost::hard_repeating_teachers(self, Shift::First, true);
+        println!("Teacher shift spread:");
+        cost::hard_teacher_shift_spread(self, Shift::First, true);
+        println!("Subject holes:");
+        cost::hard_subject_holes(self, Shift::First, true);
+        println!("Repeating rooms:");
+        cost::repeating_rooms(self, Shift::First, true);
+
         println!(
             "FIRST SHIFT ({}, {}):",
             hcost1 + hcost2 + hcost3 + hcost4 + hcost5 + hcost6 + hcost7 + hcost8 + hcost9,
@@ -735,6 +740,8 @@ impl Timetable {
         cost::hard_teacher_shift_spread(self, Shift::Second, true);
         println!("Subject holes:");
         cost::hard_subject_holes(self, Shift::Second, true);
+        println!("Repeating rooms:");
+        cost::repeating_rooms(self, Shift::Second, true);
 
         println!(
             "SECOND SHIFT ({}, {}):",
@@ -755,11 +762,16 @@ impl Timetable {
         println!("  (s) Teacher holes: {}", scost3);
         println!("  (s) Soft preferred subject times: {}", scost4);
 
-        /*
         println!("========================");
-        util::teacher_count_per_shift(self);
+        println!("Teacher shifts:");
+        cost::teacher_shifts(
+            &self.table1,
+            &self.table2,
+            self.max_periods_per_day,
+            &self.data,
+            true,
+        );
         println!("========================");
-        */
     }
 
     pub fn generate_neighbor(&self, shift: Shift, _out: &Sender, static_classes: &String) -> Self {
@@ -935,8 +947,6 @@ impl Timetable {
     }
 
     pub fn fill_rooms(&mut self, shift: Shift) {
-        let timetable = self.table(shift).clone();
-
         for period in 0..(self.max_periods_per_day * 5) {
             for class_slots in self.table_mut(shift).iter_mut() {
                 match class_slots.slots[period as usize] {
@@ -966,7 +976,10 @@ impl Timetable {
                                         subject,
                                         room: None,
                                     },
-                                    second,
+                                    second: match class_slots.slots[period as usize] {
+                                        Slot::Single(_) => unreachable!(),
+                                        Slot::Double { second, .. } => second,
+                                    },
                                     before,
                                     after,
                                 }
@@ -980,7 +993,10 @@ impl Timetable {
                                 teacher, subject, ..
                             } => {
                                 class_slots.slots[period as usize] = Slot::Double {
-                                    first,
+                                    first: match class_slots.slots[period as usize] {
+                                        Slot::Single(_) => unreachable!(),
+                                        Slot::Double { first, .. } => first,
+                                    },
                                     second: SlotData::PartiallyFilled {
                                         teacher,
                                         subject,
@@ -1000,17 +1016,219 @@ impl Timetable {
             }
         }
 
-        for period in 0..(self.max_periods_per_day * 5) {
-            let mut used_rooms: Vec<usize> = vec![];
+        let mut timetable = self.table(shift).clone();
 
+        let mut used_rooms: Vec<Vec<usize>> = Vec::new();
+        used_rooms.resize(self.max_periods_per_day as usize * 5, vec![]);
+        let data = self.data.clone();
+
+        //
+        for period in 0..(self.max_periods_per_day * 5) {
+            for class_slots in timetable.iter_mut() {
+                match &mut class_slots.slots[period as usize] {
+                    Slot::Single(SlotData::PartiallyFilled {
+                        room,
+                        subject,
+                        teacher,
+                    }) => {
+                        let mut r: Option<usize> = None;
+                        if data.teachers[*teacher].name == "Tasic Gordana" {
+                            if data.subjects[*subject].kind == "computer" {
+                                r = Some(23);
+                            }
+                        }
+                        if data.teachers[*teacher].name == "Dejan Maras" {
+                            r = Some(18);
+                        }
+
+                        if data.classes[class_slots.class_index as usize].name == "S4F" {
+                            let kind = data.subjects[*subject].kind.clone();
+                            r = if kind == "computer" || kind == "masinska-computer" {
+                                Some(29)
+                            } else if kind == "sala" {
+                                Some(7)
+                            } else {
+                                Some(15)
+                            };
+                        }
+
+                        if data.classes[class_slots.class_index as usize].name == "S2F" {
+                            let kind = data.subjects[*subject].kind.clone();
+                            r = if kind == "computer" || kind == "masinska-computer" {
+                                Some(28)
+                            } else if kind == "sala" {
+                                Some(6)
+                            } else {
+                                Some(14)
+                            };
+                        }
+
+                        if r.is_some() {
+                            used_rooms[period as usize].push(r.unwrap());
+
+                            self.table_mut(shift)[class_slots.class_index as usize].slots
+                                [period as usize] = Slot::Single(SlotData::PartiallyFilled {
+                                teacher: *teacher,
+                                subject: *subject,
+                                room: Some(r.unwrap()),
+                            });
+                        }
+                    }
+                    Slot::Double {
+                        first,
+                        second,
+                        before,
+                        after,
+                    } => {
+                        match first {
+                            SlotData::PartiallyFilled {
+                                room,
+                                subject,
+                                teacher,
+                            } => {
+                                let mut r: Option<usize> = None;
+                                if data.teachers[*teacher].name == "Tasic Gordana" {
+                                    if data.subjects[*subject].kind == "computer" {
+                                        r = Some(23);
+                                    }
+                                }
+                                if data.teachers[*teacher].name == "Dejan Maras" {
+                                    r = Some(18);
+                                }
+
+                                if data.classes[class_slots.class_index as usize].name == "S4F" {
+                                    let kind = data.subjects[*subject].kind.clone();
+                                    r = if kind == "computer" || kind == "masinska-computer" {
+                                        Some(29)
+                                    } else if kind == "sala" {
+                                        Some(7)
+                                    } else {
+                                        Some(15)
+                                    };
+                                }
+
+                                if data.classes[class_slots.class_index as usize].name == "S2F" {
+                                    let kind = data.subjects[*subject].kind.clone();
+                                    r = if kind == "computer" || kind == "masinska-computer" {
+                                        Some(28)
+                                    } else if kind == "sala" {
+                                        Some(6)
+                                    } else {
+                                        Some(14)
+                                    };
+                                }
+
+                                if r.is_some() {
+                                    used_rooms[period as usize].push(r.unwrap());
+
+                                    self.table_mut(shift)[class_slots.class_index as usize].slots
+                                        [period as usize] = Slot::Double {
+                                        first: SlotData::PartiallyFilled {
+                                            teacher: *teacher,
+                                            subject: *subject,
+                                            room: Some(r.unwrap()),
+                                        },
+                                        second: match self.table(shift)
+                                            [class_slots.class_index as usize]
+                                            .slots[period as usize]
+                                        {
+                                            Slot::Double { second, .. } => second,
+                                            _ => unreachable!(),
+                                        },
+                                        before: *before,
+                                        after: *after,
+                                    };
+                                }
+                            }
+
+                            _ => {}
+                        }
+
+                        match second {
+                            SlotData::PartiallyFilled {
+                                room,
+                                subject,
+                                teacher,
+                            } => {
+                                let mut r: Option<usize> = None;
+                                if data.teachers[*teacher].name == "Tasic Gordana" {
+                                    if data.subjects[*subject].kind == "computer"
+                                        || data.subjects[*subject].kind == "masinska-computer"
+                                    {
+                                        r = Some(23);
+                                    }
+                                }
+                                if data.teachers[*teacher].name == "Dejan Maras" {
+                                    r = Some(18);
+                                }
+
+                                if data.classes[class_slots.class_index as usize].name == "S4F" {
+                                    let kind = data.subjects[*subject].kind.clone();
+                                    r = if kind == "computer" || kind == "masinska-computer" {
+                                        Some(29)
+                                    } else if kind == "sala" {
+                                        Some(7)
+                                    } else {
+                                        Some(15)
+                                    };
+                                }
+
+                                if data.classes[class_slots.class_index as usize].name == "S2F" {
+                                    let kind = data.subjects[*subject].kind.clone();
+                                    r = if kind == "computer" || kind == "masinska-computer" {
+                                        Some(28)
+                                    } else if kind == "sala" {
+                                        Some(6)
+                                    } else {
+                                        Some(14)
+                                    };
+                                }
+
+                                if r.is_some() {
+                                    used_rooms[period as usize].push(r.unwrap());
+
+                                    self.table_mut(shift)[class_slots.class_index as usize].slots
+                                        [period as usize] = Slot::Double {
+                                        first: match self.table(shift)
+                                            [class_slots.class_index as usize]
+                                            .slots[period as usize]
+                                        {
+                                            Slot::Double { first, .. } => first,
+                                            _ => unreachable!(),
+                                        },
+                                        second: SlotData::PartiallyFilled {
+                                            teacher: *teacher,
+                                            subject: *subject,
+                                            room: Some(r.unwrap()),
+                                        },
+                                        before: *before,
+                                        after: *after,
+                                    };
+                                }
+                            }
+
+                            _ => {}
+                        }
+                    }
+
+                    _ => {}
+                }
+            }
+        }
+        //
+
+        timetable = self.table(shift).clone();
+
+        for period in 0..(self.max_periods_per_day * 5) {
             for kind in [
                 "masinska",
                 "14",
                 "sd",
                 "sala",
+                "14-23",
                 "regular",
                 "computer",
-                "14-23",
+                "computer-regular",
                 "masinska-14",
                 "masinska-sd",
                 "masinska-computer",
@@ -1018,49 +1236,61 @@ impl Timetable {
                 "masinska-regular-sd",
             ] {
                 let kind = kind.to_string();
-                println!("KIND: {}", kind);
+                // println!("KIND: {}", kind);
 
                 let mut c: usize = 0;
                 for class_slots in timetable.iter() {
                     match class_slots.slots[period as usize] {
                         Slot::Single(SlotData::PartiallyFilled {
-                            teacher, subject, ..
+                            teacher,
+                            subject,
+                            room,
                         }) => {
-                            println!(
-                                "  SINGLE: Class[{}], Teacher[{}], Subject[{}], Used[{}]",
-                                self.data.classes[c].name,
-                                self.data.teachers[teacher].name,
-                                self.data.subjects[subject].name,
-                                used_rooms
-                                    .iter()
-                                    .map(|id| self.data.rooms[*id].name.clone())
-                                    .collect::<Vec<String>>()
-                                    .join(", ")
-                            );
+                            if room.is_none() {
+                                /*
+                                println!(
+                                    "  SINGLE: Class[{}], Teacher[{}], Subject[{}], Used[{}]",
+                                    self.data.classes[c].name,
+                                    self.data.teachers[teacher].name,
+                                    self.data.subjects[subject].name,
+                                    used_rooms[period as usize]
+                                        .iter()
+                                        .map(|id| self.data.rooms[*id].name.clone())
+                                        .collect::<Vec<String>>()
+                                        .join(", ")
+                                );
+                                */
 
-                            if self.data.subjects[subject].kind == kind {
-                                let mut found = false;
-                                let mut i: usize = 0;
-                                for room in self.data.rooms.clone() {
-                                    if !used_rooms.contains(&i) && room.kinds.contains(&kind) {
-                                        println!("    ROOM: {}", room.name);
-                                        used_rooms.push(i);
-                                        self.table_mut(shift)[c].slots[period as usize] =
-                                            Slot::Single(SlotData::PartiallyFilled {
-                                                teacher,
-                                                subject,
-                                                room: Some(i),
-                                            });
-                                        found = true;
-                                        break;
+                                if self.data.subjects[subject].kind == kind {
+                                    let mut found = false;
+                                    let mut i: usize = 0;
+                                    for room in self.data.rooms.clone() {
+                                        if !used_rooms[period as usize].contains(&i)
+                                            && room.kinds.contains(&kind)
+                                        {
+                                            //println!("    ROOM: {}", room.name);
+                                            used_rooms[period as usize].push(i);
+                                            self.table_mut(shift)[c].slots[period as usize] =
+                                                Slot::Single(SlotData::PartiallyFilled {
+                                                    teacher,
+                                                    subject,
+                                                    room: Some(i),
+                                                });
+                                            found = true;
+                                            break;
+                                        }
+
+                                        i += 1;
                                     }
 
-                                    i += 1;
+                                    /*
+                                    if !found {
+                                        println!("    NO ROOM FOUND");
+                                    }
+                                    */
                                 }
-
-                                if !found {
-                                    println!("    NO ROOM FOUND");
-                                }
+                            } else {
+                                println!("empty {} {}", self.data.classes[c].name, period);
                             }
                         }
 
@@ -1073,39 +1303,44 @@ impl Timetable {
                             match first {
                                 SlotData::Empty => {}
                                 SlotData::PartiallyFilled {
-                                    teacher, subject, ..
+                                    teacher,
+                                    subject,
+                                    room,
                                 } => {
-                                    println!(
+                                    if room.is_none() {
+                                        /*
+                                        println!(
                                         "  DOUBLE 1: Class[{}], Teacher[{}], Subject[{}], Used[{}]",
                                         self.data.classes[c].name,
                                         self.data.teachers[teacher].name,
                                         self.data.subjects[subject].name,
-                                        used_rooms
+                                        used_rooms[period as usize]
                                             .iter()
                                             .map(|id| self.data.rooms[*id].name.clone())
                                             .collect::<Vec<String>>()
-                                            .join(", ")
-                                    );
+                                            .join(", "));
+                                        */
 
-                                    if self.data.subjects[subject].kind == kind {
-                                        let mut found = false;
-                                        let mut i: usize = 0;
-                                        for room in self.data.rooms.clone() {
-                                            if !used_rooms.contains(&i)
-                                                && room.kinds.contains(&kind)
-                                            {
-                                                println!("    ROOM: {}", room.name);
-                                                used_rooms.push(i);
-
-                                                let new_second = match self.table(shift)[c].slots
-                                                    [period as usize]
+                                        if self.data.subjects[subject].kind == kind {
+                                            let mut found = false;
+                                            let mut i: usize = 0;
+                                            for room in self.data.rooms.clone() {
+                                                if !used_rooms[period as usize].contains(&i)
+                                                    && room.kinds.contains(&kind)
                                                 {
-                                                    Slot::Double { second, .. } => second,
-                                                    _ => unreachable!(),
-                                                };
+                                                    // println!("    ROOM: {}", room.name);
+                                                    used_rooms[period as usize].push(i);
 
-                                                self.table_mut(shift)[c].slots[period as usize] =
-                                                    Slot::Double {
+                                                    let new_second = match self.table(shift)[c]
+                                                        .slots
+                                                        [period as usize]
+                                                    {
+                                                        Slot::Double { second, .. } => second,
+                                                        _ => unreachable!(),
+                                                    };
+
+                                                    self.table_mut(shift)[c].slots
+                                                        [period as usize] = Slot::Double {
                                                         first: SlotData::PartiallyFilled {
                                                             teacher,
                                                             subject,
@@ -1115,16 +1350,21 @@ impl Timetable {
                                                         before,
                                                         after,
                                                     };
-                                                found = true;
-                                                break;
+                                                    found = true;
+                                                    break;
+                                                }
+
+                                                i += 1;
                                             }
 
-                                            i += 1;
+                                            /*
+                                            if !found {
+                                                println!("    NO ROOM FOUND");
+                                            }
+                                            */
                                         }
-
-                                        if !found {
-                                            println!("    NO ROOM FOUND");
-                                        }
+                                    } else {
+                                        println!("empty {} {}", self.data.classes[c].name, period);
                                     }
                                 }
                             }
@@ -1132,39 +1372,43 @@ impl Timetable {
                             match second {
                                 SlotData::Empty => {}
                                 SlotData::PartiallyFilled {
-                                    teacher, subject, ..
+                                    teacher,
+                                    subject,
+                                    room,
                                 } => {
-                                    println!(
+                                    if room.is_none() {
+                                        /*
+                                        println!(
                                         "  DOUBLE 2: Class[{}], Teacher[{}], Subject[{}], Used[{}]",
                                         self.data.classes[c].name,
                                         self.data.teachers[teacher].name,
                                         self.data.subjects[subject].name,
-                                        used_rooms
+                                        used_rooms[period as usize]
                                             .iter()
                                             .map(|id| self.data.rooms[*id].name.clone())
                                             .collect::<Vec<String>>()
-                                            .join(", ")
-                                    );
+                                            .join(", "));
+                                        */
 
-                                    if self.data.subjects[subject].kind == kind {
-                                        let mut found = false;
-                                        let mut i: usize = 0;
-                                        for room in self.data.rooms.clone() {
-                                            if !used_rooms.contains(&i)
-                                                && room.kinds.contains(&kind)
-                                            {
-                                                println!("    ROOM: {}", room.name);
-                                                used_rooms.push(i);
-
-                                                let new_first = match self.table(shift)[c].slots
-                                                    [period as usize]
+                                        if self.data.subjects[subject].kind == kind {
+                                            let mut found = false;
+                                            let mut i: usize = 0;
+                                            for room in self.data.rooms.clone() {
+                                                if !used_rooms[period as usize].contains(&i)
+                                                    && room.kinds.contains(&kind)
                                                 {
-                                                    Slot::Double { first, .. } => first,
-                                                    _ => unreachable!(),
-                                                };
+                                                    //println!("    ROOM: {}", room.name);
+                                                    used_rooms[period as usize].push(i);
 
-                                                self.table_mut(shift)[c].slots[period as usize] =
-                                                    Slot::Double {
+                                                    let new_first = match self.table(shift)[c].slots
+                                                        [period as usize]
+                                                    {
+                                                        Slot::Double { first, .. } => first,
+                                                        _ => unreachable!(),
+                                                    };
+
+                                                    self.table_mut(shift)[c].slots
+                                                        [period as usize] = Slot::Double {
                                                         first: new_first,
                                                         second: SlotData::PartiallyFilled {
                                                             teacher,
@@ -1174,16 +1418,21 @@ impl Timetable {
                                                         before,
                                                         after,
                                                     };
-                                                found = true;
-                                                break;
+                                                    found = true;
+                                                    break;
+                                                }
+
+                                                i += 1;
                                             }
 
-                                            i += 1;
+                                            /*
+                                            if !found {
+                                                println!("    NO ROOM FOUND");
+                                            }
+                                            */
                                         }
-
-                                        if !found {
-                                            println!("    NO ROOM FOUND");
-                                        }
+                                    } else {
+                                        println!("empty {} {}", self.data.classes[c].name, period);
                                     }
                                 }
                             }

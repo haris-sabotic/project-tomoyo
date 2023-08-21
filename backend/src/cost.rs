@@ -1,13 +1,85 @@
 use std::{collections::HashMap, print, println, vec};
 
 use crate::{
-    logic::{ClassSlots, Shift, Slot, SlotData, Timetable},
+    logic::{ClassSlots, Shift, Slot, SlotData, Timetable, TimetableData},
     util::{TeacherSlot, TeacherSlots},
 };
 
 /* ==================== */
 /*   HARD CONSTRAINTS   */
 /* ==================== */
+
+pub fn repeating_rooms(timetable: &Timetable, shift: Shift, debug: bool) -> i32 {
+    let mut points = 0;
+
+    for period in 0..(timetable.max_periods_per_day * 5) {
+        let mut seen_rooms: Vec<usize> = vec![];
+
+        for class in 0..timetable.table(shift).len() {
+            match timetable.table(shift)[class].slots[period as usize] {
+                Slot::Single(s) => match s {
+                    SlotData::PartiallyFilled { room, .. } => match room {
+                        Some(r) => {
+                            if seen_rooms.contains(&r) {
+                                points += 1;
+
+                                if debug {
+                                    println!("  {}", timetable.data.rooms[r].name);
+                                }
+                            } else {
+                                seen_rooms.push(r);
+                            }
+                        }
+                        None => {}
+                    },
+
+                    _ => {}
+                },
+                Slot::Double { first, second, .. } => {
+                    match first {
+                        SlotData::PartiallyFilled { room, .. } => match room {
+                            Some(r) => {
+                                if seen_rooms.contains(&r) {
+                                    points += 1;
+
+                                    if debug {
+                                        println!("  {}", timetable.data.rooms[r].name);
+                                    }
+                                } else {
+                                    seen_rooms.push(r);
+                                }
+                            }
+                            None => {}
+                        },
+
+                        _ => {}
+                    }
+
+                    match second {
+                        SlotData::PartiallyFilled { room, .. } => match room {
+                            Some(r) => {
+                                if seen_rooms.contains(&r) {
+                                    points += 1;
+
+                                    if debug {
+                                        println!("  {}", timetable.data.rooms[r].name);
+                                    }
+                                } else {
+                                    seen_rooms.push(r);
+                                }
+                            }
+                            None => {}
+                        },
+
+                        _ => {}
+                    }
+                }
+            }
+        }
+    }
+
+    points
+}
 
 /// Increment points by 1 for each teacher teaching multiple classes in the same period
 pub fn hard_repeating_teachers(timetable: &Timetable, shift: Shift, debug: bool) -> i32 {
@@ -246,6 +318,7 @@ pub fn hard_too_many_subjects_of_same_kind(timetable: &Timetable, shift: Shift) 
             "sala",
             "regular",
             "computer",
+            "computer-regular",
             "14-23",
             "masinska-14",
             "masinska-sd",
@@ -292,6 +365,7 @@ pub fn hard_too_many_subjects_of_same_kind(timetable: &Timetable, shift: Shift) 
 
 pub fn hard_block_classes(timetable: &Timetable, shift: Shift) -> i32 {
     let mut points: i32 = 0;
+    /*
 
     let subjects = vec![67, 66, 64, 58];
 
@@ -345,6 +419,7 @@ pub fn hard_block_classes(timetable: &Timetable, shift: Shift) -> i32 {
         }
     }
 
+    */
     points
 }
 
@@ -494,14 +569,14 @@ pub fn hard_teacher_shift_spread(timetable: &Timetable, shift: Shift, debug: boo
         ("Ivanovic Olivera", [2, 2, 1, 1, 1]),
         //
         ("Papic Spasoje", [2, 1, 1, 2, 2]),
-        ("Zezelj Marija", [2, 1, 2, 2, 1]),
+        ("Zezelj Marija", [1, 2, 2, 2, 1]),
         //
         ("Sanja Radusinovic", [1, 2, 2, 1, 1]),
         ("Jelena Bogicevic", [1, 1, 1, 2, 2]),
         ("Ana Markovic", [2, 1, 1, 1, 2]),
-        ("Engleski 1", [2, 1, 1, 1, 3]),
+        ("Engleski 1", [1, 2, 1, 3, 1]),
         //
-        ("Aleksandra Budrak", [1, 2, 2, 2, 2]),
+        ("Aleksandra Budrak", [2, 1, 2, 2, 2]),
         ("Rada Mugosa", [2, 2, 2, 2, 1]),
         ("Sociologija 2", [1, 1, 2, 2, 1]),
         //
@@ -514,7 +589,7 @@ pub fn hard_teacher_shift_spread(timetable: &Timetable, shift: Shift, debug: boo
         ("Dejan Maras", [2, 1, 1, 2, 1]),
         ("Nevenka Roganovic", [1, 1, 2, 2, 2]),
         ("Marija Babovic", [2, 1, 1, 2, 1]),
-        ("Natasa Stojanovic", [1, 1, 2, 2, 1]),
+        ("Natasa Stojanovic", [1, 1, 1, 2, 2]),
         //
         ("Samardzic Rada", [1, 2, 2, 1, 1]),
         ("Vratnica Mladen", [1, 1, 2, 2, 2]),
@@ -523,11 +598,11 @@ pub fn hard_teacher_shift_spread(timetable: &Timetable, shift: Shift, debug: boo
         ("Vojinovic Nikolija", [2, 2, 2, 1, 1]),
         ("Dasic Nada", [1, 2, 2, 1, 2]),
         ("Calasan Vesna", [1, 2, 2, 1, 1]),
-        ("Kocovic Mitra", [1, 2, 1, 1, 2]),
+        ("Kocovic Mitra", [2, 1, 2, 1, 1]),
         ("Energetika 1", [2, 2, 1, 1, 1]),
         ("Energetika 2", [2, 1, 1, 1, 1]),
         //
-        ("Djakovic Persa", [1, 1, 1, 2, 1]),
+        ("Djakovic Persa", [1, 1, 1, 1, 2]),
         ("Matovic Dubravka", [2, 2, 1, 1, 2]),
         ("Coguric Radmila", [1, 2, 2, 2, 1]),
         ("Tasic Gordana", [2, 2, 1, 1, 2]),
@@ -540,8 +615,9 @@ pub fn hard_teacher_shift_spread(timetable: &Timetable, shift: Shift, debug: boo
         ("Lucic Mileva", [2, 1, 2, 1, 1]),
         ("Raskovic Violeta", [1, 2, 2, 1, 2]),
         ("Kojovic Nikola", [2, 1, 2, 1, 2]),
-        ("Obradovic Aleksandar", [1, 1, 2, 2, 1]),
+        ("Obradovic Aleksandar", [1, 2, 2, 1, 1]),
         ("Stevovic Mirjana", [1, 2, 1, 2, 1]),
+        //
         //("Lidija Vuletic", [1, 2, 2, 1, 2]),
         //("Kovac Vladimir", [1, 2, 1, 2, 1]),
         //("Babic Jelena", [1, 2, 1, 2, 2]),
@@ -809,9 +885,7 @@ pub fn soft_teacher_class_spread(timetable: &Timetable, teacher_table: &Vec<Teac
                 }
             }
 
-            if
-            /*day_class_count >= 6 ||*/
-            day_class_count == 1 {
+            if day_class_count == 1 {
                 points += 1;
             }
         }
@@ -924,11 +998,12 @@ pub fn soft_preferred_subject_times(timetable: &Timetable, shift: Shift) -> i32 
     points
 }
 
-/*
 pub fn teacher_shifts(
     table1: &Vec<ClassSlots>,
     table2: &Vec<ClassSlots>,
     max_periods_per_day: u32,
+    data: &TimetableData,
+    debug: bool,
 ) -> i32 {
     let mut points = 0;
 
@@ -997,10 +1072,14 @@ pub fn teacher_shifts(
         for t in teachers_seen_in_shift1.keys() {
             if teachers_seen_in_shift2.contains_key(t) {
                 points += 1;
+
+                if debug {
+                    let days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+                    println!("  {} ({})", data.teachers[*t].name, days[day as usize]);
+                }
             }
         }
     }
 
     points
 }
-*/

@@ -7,28 +7,29 @@ M2,masinska masinska-regular masinska-sd masinska-computer masinska-14 masinska-
 M1,masinska masinska-regular masinska-sd masinska-computer masinska-14 masinska-regular-sd
 Sala,sala
 Sala,sala
-22,regular masinska-regular masinska-regular-sd
-21,regular masinska-regular masinska-regular-sd
-20,regular masinska-regular masinska-regular-sd
-19,regular masinska-regular masinska-regular-sd
-18,regular masinska-regular masinska-regular-sd
-17,regular masinska-regular masinska-regular-sd
-16,regular masinska-regular masinska-regular-sd
-15,regular masinska-regular masinska-regular-sd
-14,computer 14 masinska-computer masinska-14 14-23 masinska-regular
-13,regular masinska-regular masinska-regular-sd
-12,regular masinska-regular masinska-regular-sd
-11,regular masinska-regular masinska-regular-sd
-10,computer masinska-computer
-9,computer masinska-computer
-8,computer masinska-computer
-7,computer masinska-computer
-6,regular masinska-regular masinska-regular-sd
-5,regular masinska-regular masinska-regular-sd
-4,regular masinska-regular masinska-regular-sd
-3,regular masinska-regular masinska-regular-sd
-2,computer masinska-computer
-1,computer masinska-computer
+22,regular masinska-regular masinska-regular-sd computer-regular
+21,regular masinska-regular masinska-regular-sd computer-regular
+20,regular masinska-regular masinska-regular-sd computer-regular
+19,regular masinska-regular masinska-regular-sd computer-regular
+18,regular masinska-regular masinska-regular-sd computer-regular
+17,regular masinska-regular masinska-regular-sd computer-regular
+16,regular masinska-regular masinska-regular-sd computer-regular
+15,regular masinska-regular masinska-regular-sd computer-regular
+14,computer 14 masinska-computer masinska-14 14-23 masinska-regular computer-regular
+13,regular masinska-regular masinska-regular-sd computer-regular
+12,regular masinska-regular masinska-regular-sd computer-regular
+11,regular masinska-regular masinska-regular-sd computer-regular
+10,computer masinska-computer computer-regular
+9,computer masinska-computer computer-regular
+8,computer masinska-computer computer-regular
+7,computer masinska-computer computer-regular
+6,regular masinska-regular masinska-regular-sd computer-regular
+5,regular masinska-regular masinska-regular-sd computer-regular
+4,regular masinska-regular masinska-regular-sd computer-regular
+3,regular masinska-regular masinska-regular-sd computer-regular
+2,computer masinska-computer computer-regular
+1,computer masinska-computer computer-regular
 SD,sd masinska-sd masinska-regular-sd
 Sala,sala
-23,computer regular masinska-regular masinska-computer masinska-regular-sd 14-23
+23,computer regular masinska-regular masinska-computer masinska-regular-sd 14-23 computer-regular
+MM,masinska masinska-computer masinska-regular
