@@ -703,6 +703,7 @@ pub fn hard_teacher_extra_constraints(timetable: &Timetable, shift: Shift) -> i3
             vec![0, 1, 7, 8, 14, 15, 21, 23, 28, 29],
         ),
         (79, vec![5, 6, 12, 13, 19, 20, 26, 27]), // Lidija Lazarevic
+        (61, vec![5, 6, 19, 20, 33, 34]),         // Selman Sabotic
         (33, vec![28, 29, 30, 31, 32, 33, 34]),   // Tadic Slobodan
     ]);
 
