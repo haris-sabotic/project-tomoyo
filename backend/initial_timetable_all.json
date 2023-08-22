@@ -2727,7 +2727,7 @@
                 {
                     "Double":
                     {
-                        "after": 2,
+                        "after": 1,
                         "before": 0,
                         "first":
                         {
@@ -2744,7 +2744,7 @@
                 {
                     "Double":
                     {
-                        "after": 1,
+                        "after": 0,
                         "before": 1,
                         "first":
                         {
@@ -2762,7 +2762,7 @@
                     "Double":
                     {
                         "after": 0,
-                        "before": 2,
+                        "before": 0,
                         "first":
                         {
                             "PartiallyFilled":
@@ -3254,7 +3254,7 @@
                 {
                     "Double":
                     {
-                        "after": 2,
+                        "after": 1,
                         "before": 0,
                         "first":
                         {
@@ -3271,7 +3271,7 @@
                 {
                     "Double":
                     {
-                        "after": 1,
+                        "after": 0,
                         "before": 1,
                         "first":
                         {
@@ -3289,7 +3289,7 @@
                     "Double":
                     {
                         "after": 0,
-                        "before": 2,
+                        "before": 0,
                         "first":
                         {
                             "PartiallyFilled":
@@ -3781,7 +3781,7 @@
                 {
                     "Double":
                     {
-                        "after": 2,
+                        "after": 1,
                         "before": 0,
                         "first":
                         {
@@ -3798,7 +3798,7 @@
                 {
                     "Double":
                     {
-                        "after": 1,
+                        "after": 0,
                         "before": 1,
                         "first":
                         {
@@ -3816,7 +3816,7 @@
                     "Double":
                     {
                         "after": 0,
-                        "before": 2,
+                        "before": 0,
                         "first":
                         {
                             "PartiallyFilled":

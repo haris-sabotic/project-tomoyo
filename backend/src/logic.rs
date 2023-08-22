@@ -675,7 +675,7 @@ impl Timetable {
 
         let hcost1 = hard_1 * cost::hard_repeating_teachers(self, Shift::First, false);
         let hcost2 = hard_1 * cost::hard_holes_in_class_timetable(self, Shift::First);
-        let hcost3 = hard_1 * cost::hard_too_many_subjects_of_same_kind(self, Shift::First);
+        let hcost3 = hard_1 * cost::hard_too_many_subjects_of_same_kind(self, Shift::First, false);
         let hcost4 = hard_1 * cost::hard_block_classes(self, Shift::First);
         let hcost5 = hard_1 * cost::hard_specific_subject_days(self, Shift::First);
         let hcost6 = hard_1 * cost::hard_subject_per_day_limits(self, Shift::First);
@@ -697,6 +697,8 @@ impl Timetable {
         cost::hard_subject_holes(self, Shift::First, true);
         println!("Repeating rooms:");
         cost::repeating_rooms(self, Shift::First, true);
+        println!("Too many subjects of same kind:");
+        cost::hard_too_many_subjects_of_same_kind(self, Shift::First, true);
 
         println!(
             "FIRST SHIFT ({}, {}):",
@@ -719,7 +721,7 @@ impl Timetable {
 
         let hcost1 = hard_2 * cost::hard_repeating_teachers(self, Shift::Second, false);
         let hcost2 = hard_2 * cost::hard_holes_in_class_timetable(self, Shift::Second);
-        let hcost3 = hard_2 * cost::hard_too_many_subjects_of_same_kind(self, Shift::Second);
+        let hcost3 = hard_2 * cost::hard_too_many_subjects_of_same_kind(self, Shift::Second, false);
         let hcost4 = hard_2 * cost::hard_block_classes(self, Shift::Second);
         let hcost5 = hard_2 * cost::hard_specific_subject_days(self, Shift::Second);
         let hcost6 = hard_2 * cost::hard_subject_per_day_limits(self, Shift::Second);
@@ -741,6 +743,8 @@ impl Timetable {
         cost::hard_subject_holes(self, Shift::Second, true);
         println!("Repeating rooms:");
         cost::repeating_rooms(self, Shift::Second, true);
+        println!("Too many subjects of same kind:");
+        cost::hard_too_many_subjects_of_same_kind(self, Shift::Second, true);
 
         println!(
             "SECOND SHIFT ({}, {}):",
@@ -916,7 +920,7 @@ impl Timetable {
 
         points += multiplier * cost::hard_repeating_teachers(self, shift, false);
         points += multiplier * cost::hard_holes_in_class_timetable(self, shift);
-        points += multiplier * cost::hard_too_many_subjects_of_same_kind(self, shift);
+        points += multiplier * cost::hard_too_many_subjects_of_same_kind(self, shift, false);
         points += multiplier * cost::hard_block_classes(self, shift);
         points += multiplier * cost::hard_specific_subject_days(self, shift);
         points += multiplier * cost::hard_subject_per_day_limits(self, shift);

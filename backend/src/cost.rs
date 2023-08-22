@@ -236,7 +236,11 @@ pub fn hard_holes_in_class_timetable(timetable: &Timetable, shift: Shift) -> i32
 /// Increment points by 1 for each period during which too many classes are being held with the same kind
 ///
 /// Example: During the 2nd period of Tuesday, 5 IT classes are being held, when there's only 3 computer classrooms in the school
-pub fn hard_too_many_subjects_of_same_kind(timetable: &Timetable, shift: Shift) -> i32 {
+pub fn hard_too_many_subjects_of_same_kind(
+    timetable: &Timetable,
+    shift: Shift,
+    debug: bool,
+) -> i32 {
     let mut points = 0;
 
     for period in 0..(timetable.max_periods_per_day * 5) {
@@ -353,6 +357,10 @@ pub fn hard_too_many_subjects_of_same_kind(timetable: &Timetable, shift: Shift) 
 
                     if !found_rooms {
                         points += 1;
+
+                        if debug {
+                            println!("  {}: {}", period, kind);
+                        }
                     }
                 }
                 None => {}
@@ -760,6 +768,7 @@ pub fn hard_teacher_extra_constraints(timetable: &Timetable, shift: Shift) -> i3
 /// Increment points by 1 for each day in a class timetable that contains more periods than what's ideal (even spread)
 pub fn soft_class_spread(timetable: &Timetable, shift: Shift) -> i32 {
     let mut points = 0;
+
     /*
 
     for class_slots in timetable.table(shift).iter() {
@@ -852,6 +861,7 @@ pub fn soft_class_spread(timetable: &Timetable, shift: Shift) -> i32 {
     }
 
     */
+
     points
 }
 
