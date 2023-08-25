@@ -1040,8 +1040,8 @@ pub fn teacher_shifts(
     let mut points = 0;
 
     for day in 0..5 {
-        let mut teachers_seen_in_shift1: HashMap<usize, bool> = HashMap::new();
-        let mut teachers_seen_in_shift2: HashMap<usize, bool> = HashMap::new();
+        let mut teachers_seen_in_shift1: HashMap<usize, u32> = HashMap::new();
+        let mut teachers_seen_in_shift2: HashMap<usize, u32> = HashMap::new();
 
         for period in 0..max_periods_per_day {
             let index = day * max_periods_per_day + period;
@@ -1049,12 +1049,22 @@ pub fn teacher_shifts(
             for class_slots in table1.iter() {
                 match class_slots.slots[index as usize] {
                     Slot::Single(SlotData::PartiallyFilled { teacher, .. }) => {
-                        teachers_seen_in_shift1.insert(teacher, true);
+                        teachers_seen_in_shift1
+                            .entry(teacher)
+                            .and_modify(|n| *n += 1)
+                            .or_insert(1);
+
+                        // teachers_seen_in_shift1.insert(teacher, true);
                     }
                     Slot::Double { first, second, .. } => {
                         match first {
                             SlotData::PartiallyFilled { teacher, .. } => {
-                                teachers_seen_in_shift1.insert(teacher, true);
+                                teachers_seen_in_shift1
+                                    .entry(teacher)
+                                    .and_modify(|n| *n += 1)
+                                    .or_insert(1);
+
+                                // teachers_seen_in_shift1.insert(teacher, true);
                             }
 
                             _ => {}
@@ -1062,7 +1072,12 @@ pub fn teacher_shifts(
 
                         match second {
                             SlotData::PartiallyFilled { teacher, .. } => {
-                                teachers_seen_in_shift1.insert(teacher, true);
+                                teachers_seen_in_shift1
+                                    .entry(teacher)
+                                    .and_modify(|n| *n += 1)
+                                    .or_insert(1);
+
+                                // teachers_seen_in_shift1.insert(teacher, true);
                             }
 
                             _ => {}
@@ -1076,12 +1091,22 @@ pub fn teacher_shifts(
             for class_slots in table2.iter() {
                 match class_slots.slots[index as usize] {
                     Slot::Single(SlotData::PartiallyFilled { teacher, .. }) => {
-                        teachers_seen_in_shift2.insert(teacher, true);
+                        teachers_seen_in_shift2
+                            .entry(teacher)
+                            .and_modify(|n| *n += 1)
+                            .or_insert(1);
+
+                        // teachers_seen_in_shift2.insert(teacher, true);
                     }
                     Slot::Double { first, second, .. } => {
                         match first {
                             SlotData::PartiallyFilled { teacher, .. } => {
-                                teachers_seen_in_shift2.insert(teacher, true);
+                                teachers_seen_in_shift2
+                                    .entry(teacher)
+                                    .and_modify(|n| *n += 1)
+                                    .or_insert(1);
+
+                                // teachers_seen_in_shift2.insert(teacher, true);
                             }
 
                             _ => {}
@@ -1089,7 +1114,12 @@ pub fn teacher_shifts(
 
                         match second {
                             SlotData::PartiallyFilled { teacher, .. } => {
-                                teachers_seen_in_shift2.insert(teacher, true);
+                                teachers_seen_in_shift2
+                                    .entry(teacher)
+                                    .and_modify(|n| *n += 1)
+                                    .or_insert(1);
+
+                                // teachers_seen_in_shift2.insert(teacher, true);
                             }
 
                             _ => {}
@@ -1107,10 +1137,19 @@ pub fn teacher_shifts(
 
                 if debug {
                     let days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
-                    println!("  {} ({})", data.teachers[*t].name, days[day as usize]);
+                    println!(
+                        "  {} ({}) [{}]",
+                        data.teachers[*t].name,
+                        days[day as usize],
+                        teachers_seen_in_shift1[t] + teachers_seen_in_shift2[t]
+                    );
                 }
             }
         }
+    }
+
+    if debug {
+        println!("\nTotal cost: {}", points);
     }
 
     points
