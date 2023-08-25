@@ -36,6 +36,7 @@
                 data: classes,
             })
         );
+        
     }
 </script>
 

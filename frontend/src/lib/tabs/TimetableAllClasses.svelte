@@ -15,6 +15,12 @@
     let selectedGroup = "single";
     let selectedSwapSlots = "single";
 
+    let showFirstShift = true;
+    let showSecondShift = true;
+
+    let makeDoubleBefore = 0;
+    let makeDoubleAfter = 0;
+
     let onClassSlotClick = (shift, class_index, slot_index) => {
         if (selectedClass == null) {
             selectedShift = shift;
@@ -169,8 +175,38 @@
             ] = tmp;
         }
     };
+
+    let handleMakeDouble = () => {
+        if (selectedShift == 1) {
+            timetable.table1[selectedClass].slots[selectedSlot] = {
+                "Double": {
+                    "first": "Empty",
+                    "second": "Empty",
+                    "before": makeDoubleBefore,
+                    "after": makeDoubleAfter
+                }
+            }
+        } else if (selectedShift == 2) {
+            timetable.table2[selectedClass].slots[selectedSlot] = {
+                "Double": {
+                    "first": "Empty",
+                    "second": "Empty",
+                    "before": makeDoubleBefore,
+                    "after": makeDoubleAfter
+                }
+            }
+        }
+    }
 </script>
 
+<div class="visibility">
+    <button on:click={() => (showFirstShift = !showFirstShift)}
+        >SHOW FIRST</button
+    >
+    <button on:click={() => (showSecondShift = !showSecondShift)}
+        >SHOW SECOND</button
+    >
+</div>
 <div class="table-controls">
     <div class="change-room">
         <p>Change room:</p>
@@ -202,113 +238,136 @@
         <p>Switch groups:</p>
         <button on:click={handleSwitchGroups}>OK</button>
     </div>
+    
+    <div class="make-double">
+        <p>Make double:</p>
+        <input type="number" bind:value={makeDoubleBefore} placeholder="before">
+        <input type="number" bind:value={makeDoubleAfter} placeholder="after">
+        <button on:click={handleMakeDouble}>OK</button>
+    </div>
 </div>
 
-<h1>FIRST SHIFT</h1>
+{#if showFirstShift}
+    <h1>FIRST SHIFT</h1>
 
-<table>
-    <tr>
-        <th />
-        <th class="day-begin day-end" colspan={timetable.max_periods_per_day}
-            >Mon</th
-        >
-        <th class="day-begin day-end" colspan={timetable.max_periods_per_day}
-            >Tue</th
-        >
-        <th class="day-begin day-end" colspan={timetable.max_periods_per_day}
-            >Wed</th
-        >
-        <th class="day-begin day-end" colspan={timetable.max_periods_per_day}
-            >Thu</th
-        >
-        <th class="day-begin day-end" colspan={timetable.max_periods_per_day}
-            >Fri</th
-        >
-    </tr>
-    <tr>
-        <th>Class name</th>
-        {#each { length: 5 } as _, _}
-            <th class="day-begin">1</th>
-            {#each { length: timetable.max_periods_per_day - 2 } as _, i}
-                <th>{i + 2}</th>
-            {/each}
-            <th class="day-end">{timetable.max_periods_per_day}</th>
-        {/each}
-    </tr>
-    {#each timetable.table1 as { class_index, slots }}
+    <table>
         <tr>
-            <td><strong>{classes[class_index]}</strong></td>
-            {#each slots as slot, slot_index}
-                <TimetableClassSlot
-                    day_separators={true}
-                    {slot_index}
-                    {slot}
-                    {subjects}
-                    {teachers}
-                    {rooms}
-                    max_periods_per_day={timetable.max_periods_per_day}
-                    selected={selectedShift == 1 &&
-                        class_index == selectedClass &&
-                        slot_index == selectedSlot}
-                    onClick={() => onClassSlotClick(1, class_index, slot_index)}
-                />
+            <th />
+            <th
+                class="day-begin day-end"
+                colspan={timetable.max_periods_per_day}>Mon</th
+            >
+            <th
+                class="day-begin day-end"
+                colspan={timetable.max_periods_per_day}>Tue</th
+            >
+            <th
+                class="day-begin day-end"
+                colspan={timetable.max_periods_per_day}>Wed</th
+            >
+            <th
+                class="day-begin day-end"
+                colspan={timetable.max_periods_per_day}>Thu</th
+            >
+            <th
+                class="day-begin day-end"
+                colspan={timetable.max_periods_per_day}>Fri</th
+            >
+        </tr>
+        <tr>
+            <th>Class name</th>
+            {#each { length: 5 } as _, _}
+                <th class="day-begin">1</th>
+                {#each { length: timetable.max_periods_per_day - 2 } as _, i}
+                    <th>{i + 2}</th>
+                {/each}
+                <th class="day-end">{timetable.max_periods_per_day}</th>
             {/each}
         </tr>
-    {/each}
-</table>
-
-<h1>SECOND SHIFT</h1>
-
-<table>
-    <tr>
-        <th />
-        <th class="day-begin day-end" colspan={timetable.max_periods_per_day}
-            >Mon</th
-        >
-        <th class="day-begin day-end" colspan={timetable.max_periods_per_day}
-            >Tue</th
-        >
-        <th class="day-begin day-end" colspan={timetable.max_periods_per_day}
-            >Wed</th
-        >
-        <th class="day-begin day-end" colspan={timetable.max_periods_per_day}
-            >Thu</th
-        >
-        <th class="day-begin day-end" colspan={timetable.max_periods_per_day}
-            >Fri</th
-        >
-    </tr>
-    <tr>
-        <th>Class name</th>
-        {#each { length: 5 } as _, _}
-            <th class="day-begin">1</th>
-            {#each { length: timetable.max_periods_per_day - 2 } as _, i}
-                <th>{i + 2}</th>
-            {/each}
-            <th class="day-end">{timetable.max_periods_per_day}</th>
+        {#each timetable.table1 as { class_index, slots }}
+            <tr>
+                <td><strong>{classes[class_index]}</strong></td>
+                {#each slots as slot, slot_index}
+                    <TimetableClassSlot
+                        day_separators={true}
+                        {slot_index}
+                        {slot}
+                        {subjects}
+                        {teachers}
+                        {rooms}
+                        max_periods_per_day={timetable.max_periods_per_day}
+                        selected={selectedShift == 1 &&
+                            class_index == selectedClass &&
+                            slot_index == selectedSlot}
+                        onClick={() =>
+                            onClassSlotClick(1, class_index, slot_index)}
+                    />
+                {/each}
+            </tr>
         {/each}
-    </tr>
-    {#each timetable.table2 as { class_index, slots }}
+    </table>
+{/if}
+
+{#if showSecondShift}
+    <h1>SECOND SHIFT</h1>
+
+    <table>
         <tr>
-            <td><strong>{classes[class_index]}</strong></td>
-            {#each slots as slot, slot_index}
-                <TimetableClassSlot
-                    day_separators={true}
-                    {slot_index}
-                    {slot}
-                    {subjects}
-                    {teachers}
-                    {rooms}
-                    max_periods_per_day={timetable.max_periods_per_day}
-                    selected={selectedShift == 2 &&
-                        class_index == selectedClass &&
-                        slot_index == selectedSlot}
-                    onClick={() => onClassSlotClick(2, class_index, slot_index)}
-                />
+            <th />
+            <th
+                class="day-begin day-end"
+                colspan={timetable.max_periods_per_day}>Mon</th
+            >
+            <th
+                class="day-begin day-end"
+                colspan={timetable.max_periods_per_day}>Tue</th
+            >
+            <th
+                class="day-begin day-end"
+                colspan={timetable.max_periods_per_day}>Wed</th
+            >
+            <th
+                class="day-begin day-end"
+                colspan={timetable.max_periods_per_day}>Thu</th
+            >
+            <th
+                class="day-begin day-end"
+                colspan={timetable.max_periods_per_day}>Fri</th
+            >
+        </tr>
+        <tr>
+            <th>Class name</th>
+            {#each { length: 5 } as _, _}
+                <th class="day-begin">1</th>
+                {#each { length: timetable.max_periods_per_day - 2 } as _, i}
+                    <th>{i + 2}</th>
+                {/each}
+                <th class="day-end">{timetable.max_periods_per_day}</th>
             {/each}
         </tr>
-    {/each}
-</table>
+        {#each timetable.table2 as { class_index, slots }}
+            <tr>
+                <td><strong>{classes[class_index]}</strong></td>
+                {#each slots as slot, slot_index}
+                    <TimetableClassSlot
+                        day_separators={true}
+                        {slot_index}
+                        {slot}
+                        {subjects}
+                        {teachers}
+                        {rooms}
+                        max_periods_per_day={timetable.max_periods_per_day}
+                        selected={selectedShift == 2 &&
+                            class_index == selectedClass &&
+                            slot_index == selectedSlot}
+                        onClick={() =>
+                            onClassSlotClick(2, class_index, slot_index)}
+                    />
+                {/each}
+            </tr>
+        {/each}
+    </table>
+{/if}
 
 <style>
     th,
