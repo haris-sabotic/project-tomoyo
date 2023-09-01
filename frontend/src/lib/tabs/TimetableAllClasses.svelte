@@ -13,7 +13,11 @@
 
     let selectedRoom = null;
     let selectedGroup = "single";
+    let selectedGroupTeacher = "single";
     let selectedSwapSlots = "single";
+    let selectedTeacher = null;
+    let selectedTeacherAdd = null;
+    let selectedSubjectAdd = null;
 
     let showFirstShift = true;
     let showSecondShift = true;
@@ -144,6 +148,40 @@
         }
     };
 
+    let handleChangeTeacher = () => {
+        if (selectedClass != null && selectedTeacher != null) {
+            if (selectedShift == 1) {
+                if (selectedGroupTeacher == "single") {
+                    timetable.table1[selectedClass].slots[selectedSlot][
+                        "Single"
+                    ]["PartiallyFilled"].teacher = selectedTeacher;
+                } else if (selectedGroupTeacher == "first") {
+                    timetable.table1[selectedClass].slots[selectedSlot][
+                        "Double"
+                    ]["first"]["PartiallyFilled"].teacher = selectedTeacher;
+                } else if (selectedGroupTeacher == "second") {
+                    timetable.table1[selectedClass].slots[selectedSlot][
+                        "Double"
+                    ]["second"]["PartiallyFilled"].teacher = selectedTeacher;
+                }
+            } else if (selectedShift == 2) {
+                if (selectedGroupTeacher == "single") {
+                    timetable.table2[selectedClass].slots[selectedSlot][
+                        "Single"
+                    ]["PartiallyFilled"].teacher = selectedTeacher;
+                } else if (selectedGroupTeacher == "first") {
+                    timetable.table2[selectedClass].slots[selectedSlot][
+                        "Double"
+                    ]["first"]["PartiallyFilled"].teacher = selectedTeacher;
+                } else if (selectedGroupTeacher == "second") {
+                    timetable.table2[selectedClass].slots[selectedSlot][
+                        "Double"
+                    ]["second"]["PartiallyFilled"].teacher = selectedTeacher;
+                }
+            }
+        }
+    };
+
     let handleSwitchGroups = () => {
         if (selectedShift == 1) {
             let tmp =
@@ -176,27 +214,47 @@
         }
     };
 
+    let handleAddSingle = () => {
+        if (selectedShift == 1) {
+            timetable.table1[selectedClass].slots[selectedSlot]["Single"] = {
+                PartiallyFilled: {
+                    room: null,
+                    subject: selectedSubjectAdd,
+                    teacher: selectedTeacherAdd,
+                },
+            };
+        } else if (selectedShift == 2) {
+            timetable.table2[selectedClass].slots[selectedSlot]["Single"] = {
+                PartiallyFilled: {
+                    room: null,
+                    subject: selectedSubjectAdd,
+                    teacher: selectedTeacherAdd,
+                },
+            };
+        }
+    };
+
     let handleMakeDouble = () => {
         if (selectedShift == 1) {
             timetable.table1[selectedClass].slots[selectedSlot] = {
-                "Double": {
-                    "first": "Empty",
-                    "second": "Empty",
-                    "before": makeDoubleBefore,
-                    "after": makeDoubleAfter
-                }
-            }
+                Double: {
+                    first: "Empty",
+                    second: "Empty",
+                    before: makeDoubleBefore,
+                    after: makeDoubleAfter,
+                },
+            };
         } else if (selectedShift == 2) {
             timetable.table2[selectedClass].slots[selectedSlot] = {
-                "Double": {
-                    "first": "Empty",
-                    "second": "Empty",
-                    "before": makeDoubleBefore,
-                    "after": makeDoubleAfter
-                }
-            }
+                Double: {
+                    first: "Empty",
+                    second: "Empty",
+                    before: makeDoubleBefore,
+                    after: makeDoubleAfter,
+                },
+            };
         }
-    }
+    };
 </script>
 
 <div class="visibility">
@@ -238,12 +296,52 @@
         <p>Switch groups:</p>
         <button on:click={handleSwitchGroups}>OK</button>
     </div>
-    
+
     <div class="make-double">
         <p>Make double:</p>
-        <input type="number" bind:value={makeDoubleBefore} placeholder="before">
-        <input type="number" bind:value={makeDoubleAfter} placeholder="after">
+        <input
+            type="number"
+            bind:value={makeDoubleBefore}
+            placeholder="before"
+        />
+        <input type="number" bind:value={makeDoubleAfter} placeholder="after" />
         <button on:click={handleMakeDouble}>OK</button>
+    </div>
+
+    <div class="change-teacher">
+        <p>Change teacher:</p>
+        <select bind:value={selectedTeacher}>
+            {#each teachers as teacher, teacher_id}
+                <option value={teacher_id}>
+                    {teacher}
+                </option>
+            {/each}
+        </select>
+        <select bind:value={selectedGroupTeacher}>
+            <option value="single">Single</option>
+            <option value="first">First</option>
+            <option value="second">Second</option>
+        </select>
+        <button on:click={handleChangeTeacher}>OK</button>
+    </div>
+
+    <div class="add-single">
+        <p>Add single:</p>
+        <select bind:value={selectedTeacherAdd}>
+            {#each teachers as teacher, teacher_id}
+                <option value={teacher_id}>
+                    {teacher}
+                </option>
+            {/each}
+        </select>
+        <select bind:value={selectedSubjectAdd}>
+            {#each subjects as subject, subject_id}
+                <option value={subject_id}>
+                    {subject.name}
+                </option>
+            {/each}
+        </select>
+        <button on:click={handleAddSingle}>OK</button>
     </div>
 </div>
 
