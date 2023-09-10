@@ -12,6 +12,27 @@
 
     const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 
+    const PERIOD_TIMES = {
+        first: [
+            "7:00 - 7:45",
+            "7:50 - 8:35",
+            "8:50 - 9:35",
+            "9:40 - 10:25",
+            "10:35 - 11:20",
+            "11:25 - 12:10",
+            "12:15 - 13:00",
+        ],
+        second: [
+            "13:10 - 13:55",
+            "14:00 - 14:45",
+            "15:00 - 15:45",
+            "15:50 - 16:35",
+            "16:45 - 17:30",
+            "17:35 - 18:20",
+            "18:25 - 19:10",
+        ],
+    };
+
     let getTable = () => {
         if (shift == 1) {
             return timetable.table1;
@@ -84,7 +105,13 @@
     <tr>
         <th />
         {#each { length: timetable.max_periods_per_day } as _, i}
-            <th>{i + 1}</th>
+            <th>
+                <p>{i + 1}</p>
+                <div>
+                    <p>{PERIOD_TIMES.first[i]}</p>
+                    <p>{PERIOD_TIMES.second[i]}</p>
+                </div>
+            </th>
         {/each}
     </tr>
 
@@ -132,5 +159,20 @@
 
     .day-cell {
         background-color: rgb(245, 245, 245);
+    }
+
+    th > p {
+        margin: 0;
+        font-size: 1.5em;
+    }
+
+    th > div {
+        margin-top: 10px;
+        margin-bottom: 5px;
+    }
+
+    th > div > p {
+        font-weight: normal;
+        margin: 0;
     }
 </style>
